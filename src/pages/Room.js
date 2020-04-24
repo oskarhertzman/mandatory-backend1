@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
+import '../styles/Rooms.scss';
 const ENDPOINT = "http://127.0.0.1:8090";
 
 
@@ -27,9 +28,11 @@ function Room() {
 
   return (
     <div className="Room">
+      <div className="Room__container">
       <p>
       It's <time dateTime={response}>{response}</time>
     </p>
+      </div>
     </div>
   );
 }

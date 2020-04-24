@@ -1,0 +1,8 @@
+@import "./Variables";
+
+.Room {
+
+  &__container {
+    @include centerer;
+  }
+}

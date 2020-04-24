@@ -1,0 +1,9 @@
+@import "./Variables";
+
+
+.Main {
+
+  &__container {
+    @include centerer;
+  }
+}

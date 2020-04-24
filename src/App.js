@@ -3,7 +3,7 @@ import Main from './pages/Main';
 import Room from './pages/Room';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
-import './App.css';
+import './styles/App.scss';
 
 function App() {
 
