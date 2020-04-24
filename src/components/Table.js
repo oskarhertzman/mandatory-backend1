@@ -2,29 +2,37 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
 import MaterialTable, { MTableToolbar } from 'material-table';
+import { Redirect } from "react-router-dom";
 const ENDPOINT = "http://127.0.0.1:8090";
 
 export default function Table({rooms}) {
   const [tableData, setTabledata] = useState(rooms);
-  const [socket] = useState(io(ENDPOINT))
+  const [currRoom, updateCurrRoom] = useState(false);
+  const socket = io(ENDPOINT);
   const [state, setState] = useState({
     columns: [
       { title: 'Name', field: 'name' },
       { title: 'Type', field: 'type' },
       { title: 'Topic', field: 'topic' },
-      { title: '', field: 'enter', render: rowData => <button>Enter </button>},
+      { title: '', field: 'enter', render: rowData => <button onClick={() => updateCurrRoom(rowData)}>Enter </button>},
     ],
     data: tableData
   });
 
 
-
   function updateDB (data) {
     console.log(data);
-    socket.emit('im a client', data)
+    socket.emit('update_rooms', data)
   }
 
   return (
+    <div>
+    {currRoom ?
+      <Redirect
+        to={{
+          pathname: `/room:${currRoom.tableData.id}`,
+          state: { referrer: currRoom }
+        }}/> : null}
     <MaterialTable
       title="Chat Rooms"
       columns={state.columns}
@@ -68,5 +76,6 @@ export default function Table({rooms}) {
           }),
       }}
     />
+  </div>
   );
 }

@@ -5,10 +5,11 @@ import '../styles/Rooms.scss';
 const ENDPOINT = "http://127.0.0.1:8090";
 
 
-function Room() {
-  const [response, setResponse] = useState("");
+function Room(props) {
+  const [room, updateRoom] = useState(props.location.state.referrer);
 
   useEffect(() => {
+    console.log(props.location.state.referrer);
     const socket = io(ENDPOINT);
     getMessages(socket);
   }, [])
@@ -16,7 +17,6 @@ function Room() {
 
   function getMessages (socket) {
     socket.on('FromAPI', (data) => {
-      setResponse(data);
       console.log(data);
     });
   }
@@ -29,9 +29,7 @@ function Room() {
   return (
     <div className="Room">
       <div className="Room__container">
-      <p>
-      It's <time dateTime={response}>{response}</time>
-    </p>
+      <p>Welcome to {room.name} </p>
       </div>
     </div>
   );

@@ -32,7 +32,7 @@ io.on("connection", (socket) => {
     clearInterval(interval);
   }
   getRoomsandEmit(socket)
-  socket.on('im a client', (data) => {
+  socket.on('update_rooms', (data) => {
     console.log(data);
     RoomSave(data);
   });

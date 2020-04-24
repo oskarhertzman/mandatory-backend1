@@ -13,7 +13,7 @@ function App() {
       <HelmetProvider>
         <Router>
           <Route exact path="/" component={Main} />
-          <Route path="/room" component={Room} />
+          <Route path="/room:id" component={Room} />
         </Router>
       </HelmetProvider>
     </div>
