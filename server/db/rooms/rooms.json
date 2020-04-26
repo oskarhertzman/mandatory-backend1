@@ -1,1 +1,1 @@
-[{"name":"Room 1","type":"Public","topic":"Video Games","tableData":{"id":0}},{"name":"Room 2","type":"Private","topic":"Animals","tableData":{"id":1}},{"name":"Room 3","type":"Public","topic":"Sports"}]
+[{"name":"Room 1","type":"Public","topic":"Sports","uuid":"49e43111-129e-4603-9859-c9cd36fd86db","messages":[],"tableData":{"id":0}},{"name":"Room 2","type":"Private ","topic":"Games","uuid":"baae0cdf-7574-44bd-b41a-db904e8511b0","messages":[]}]

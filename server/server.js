@@ -14,6 +14,11 @@ let interval;
 const ROOMS_PATH = './db/rooms/rooms.json';
 const rooms = JSON.parse(fs.readFileSync(ROOMS_PATH));
 
+const getRoomsandEmit = socket => {
+  const response = rooms;
+  socket.emit("Rooms", response);
+};
+
 function RoomSave (data) {
   return new Promise((resolve, reject) => {
     fs.writeFile(ROOMS_PATH, JSON.stringify(data), function(err) {
@@ -26,25 +31,32 @@ function RoomSave (data) {
     })
   })
 }
+
 io.on("connection", (socket) => {
   console.log("New client connected");
   if (interval) {
     clearInterval(interval);
   }
   getRoomsandEmit(socket)
+
   socket.on('update_rooms', (data) => {
     console.log(data);
-    RoomSave(data);
+    RoomSave(data, socket);
   });
+
+  socket.on('get_room', function (data, callback) {
+    let result = rooms.filter(obj => {
+    return obj.uuid === data;
+  })
+  callback(result);
+  })
+
   socket.on("disconnect", () => {
     console.log("Client disconnected");
     clearInterval(interval);
   });
 });
 
-const getRoomsandEmit = socket => {
-  const response = rooms;
-  socket.emit("Rooms", response);
-};
+
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
