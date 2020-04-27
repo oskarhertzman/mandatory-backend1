@@ -32,23 +32,46 @@ function RoomSave (data) {
   })
 }
 
+function NewMessage (rooms, data) {
+// Ganska dålig lösning, ej skalbar, i know.
+const objIndex = rooms.findIndex((obj => obj.uuid == data.uuid));
+const updatedObj = { ...rooms[objIndex], messages: data.messages};
+const updatedArray = [...rooms.slice(0, objIndex), updatedObj, ...rooms.slice(objIndex + 1),];
+return new Promise((resolve, reject) => {
+  fs.writeFile(ROOMS_PATH, JSON.stringify(updatedArray), function(err) {
+    if (err) {
+      reject(err);
+    }
+    else {
+      resolve();
+    }
+  })
+})
+}
+
 io.on("connection", (socket) => {
+
   console.log("New client connected");
   if (interval) {
     clearInterval(interval);
   }
   getRoomsandEmit(socket)
 
-  socket.on('update_rooms', (data) => {
-    console.log(data);
-    RoomSave(data, socket);
-  });
-
   socket.on('get_room', function (data, callback) {
     let result = rooms.filter(obj => {
     return obj.uuid === data;
   })
   callback(result);
+});
+
+  socket.on('update_rooms', (data) => {
+    console.log(data);
+    RoomSave(data);
+  });
+
+  socket.on('new_message', (data) => {
+    console.log(data);
+    NewMessage(rooms, data);
   })
 
   socket.on("disconnect", () => {

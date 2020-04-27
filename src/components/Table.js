@@ -26,67 +26,63 @@ export default function Table({rooms}) {
     socket.emit('update_rooms', data)
   }
 
-
-
-
-
   return (
     <div>
-    {currRoom || currRoom === 0 ?
-      <Redirect
-        to={{
-          pathname: `/room:${currRoom.uuid}`,
-          state: { referrer: currRoom }
-        }}/> : null}
-    <MaterialTable
-      title="Chat Rooms"
-      columns={state.columns}
-      data={state.data}
-      editable={{
-        onRowAdd: (newData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              setState((prevState) => {
-                newData.uuid = uuidv4();
-                newData.messages = [];
-                console.log(newData);
-                const data = [...prevState.data];
-                data.push(newData)
-                console.log(data);
-                updateToDB(data)
-                return { ...prevState, data };
-              });
-            }, 600);
-          }),
-        onRowUpdate: (newData, oldData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              if (oldData) {
-                setState((prevState) => {
-                  const data = [...prevState.data];
-                  data[data.indexOf(oldData)] = newData;
-                  updateToDB(data);
-                  return { ...prevState, data };
-                });
-              }
-            }, 600);
-          }),
-        onRowDelete: (oldData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              setState((prevState) => {
-                const data = [...prevState.data];
-                data.splice(data.indexOf(oldData), 1);
-                updateToDB(data);
-                return { ...prevState, data };
-              });
-            }, 600);
-          }),
-      }}
-    />
-  </div>
-  );
-}
+      {currRoom || currRoom === 0 ?
+        <Redirect
+          to={{
+            pathname: `/room:${currRoom.uuid}`,
+            state: { referrer: currRoom }
+          }}/> : null}
+          <MaterialTable
+            title="Chat Rooms"
+            columns={state.columns}
+            data={state.data}
+            editable={{
+              onRowAdd: (newData) =>
+              new Promise((resolve) => {
+                setTimeout(() => {
+                  resolve();
+                  setState((prevState) => {
+                    newData.uuid = uuidv4();
+                    newData.messages = [];
+                    console.log(newData);
+                    const data = [...prevState.data];
+                    data.push(newData)
+                    console.log(data);
+                    updateToDB(data)
+                    return { ...prevState, data };
+                  });
+                }, 600);
+              }),
+              onRowUpdate: (newData, oldData) =>
+              new Promise((resolve) => {
+                setTimeout(() => {
+                  resolve();
+                  if (oldData) {
+                    setState((prevState) => {
+                      const data = [...prevState.data];
+                      data[data.indexOf(oldData)] = newData;
+                      updateToDB(data);
+                      return { ...prevState, data };
+                    });
+                  }
+                }, 600);
+              }),
+              onRowDelete: (oldData) =>
+              new Promise((resolve) => {
+                setTimeout(() => {
+                  resolve();
+                  setState((prevState) => {
+                    const data = [...prevState.data];
+                    data.splice(data.indexOf(oldData), 1);
+                    updateToDB(data);
+                    return { ...prevState, data };
+                  });
+                }, 600);
+              }),
+            }}
+          />
+        </div>
+      );
+    }

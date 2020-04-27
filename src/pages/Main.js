@@ -14,10 +14,10 @@ function Main() {
   }, [])
 
   function getRooms (socket) {
-      socket.on('Rooms', (data) => {
-        setRoomData(data);
-        console.log(data);
-      })
+    socket.on('Rooms', (data) => {
+      setRoomData(data);
+      console.log(data);
+    })
   }
   return (
     <div className="Main">
@@ -27,9 +27,9 @@ function Main() {
           <Table
             rooms={roomData}/> : null
           }
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-export default Main;
+  export default Main;
