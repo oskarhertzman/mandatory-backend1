@@ -33,7 +33,7 @@ function RoomSave (data) {
 }
 
 function NewMessage (rooms, data) {
-// Ganska dålig lösning, ej skalbar, i know.
+// Ganska dålig lösning, ej skalbar
 const objIndex = rooms.findIndex((obj => obj.uuid == data.uuid));
 const updatedObj = { ...rooms[objIndex], messages: data.messages};
 const updatedArray = [...rooms.slice(0, objIndex), updatedObj, ...rooms.slice(objIndex + 1),];
@@ -71,6 +71,7 @@ io.on("connection", (socket) => {
 
   socket.on('new_message', (data) => {
     console.log(data);
+    socket.broadcast.emit('new_message', data)
     NewMessage(rooms, data);
   })
 

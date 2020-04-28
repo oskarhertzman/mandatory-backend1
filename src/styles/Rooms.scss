@@ -5,5 +5,14 @@
   &__container {
     @include centerer;
 
+    &__chat {
+
+      &__message {
+
+        p {
+          display: inline;
+        }
+      }
+    }
   }
 }
