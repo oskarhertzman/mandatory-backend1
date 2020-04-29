@@ -18,35 +18,28 @@ function Room(props) {
   useEffect(() => {
     socket.on('new_message', function (data) {
       console.log("GOT DATA");
-      console.log(message);
-      updateRoom(data);
+      console.log(data);
+      updateRoom(prevState => ({...prevState, messages: [...prevState.messages, data]}));
       serverRef.current = false;
     })
     socket.emit('get_room', uuid, function (response) {
       updateRoom(response[0]);
     })
+
     return () => {
       socket.off('new_message');
     }
   }, [])
 
 
-  useEffect(() => {
-    if (serverRef.current) {
-      socket.emit('new_message', room)
-    }
-  }, [room])
-
 
   function sendMessage(e) {
     e.preventDefault();
-    serverRef.current = true;
-    const merged = {...name, ...message }
+    const merged = {...name, ...message}
     console.log(merged);
-    updateRoom(prevState => ({...prevState, messages: [...prevState.messages, merged ]}));
+    socket.emit('new_message', merged, uuid)
 
   }
-
   function onMessageChange (e) {
     let target = e.target.value
     updateMessage(prevState => ({...prevState, message: target}));

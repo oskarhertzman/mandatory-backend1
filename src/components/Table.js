@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
 import MaterialTable, { MTableToolbar } from 'material-table';
@@ -7,7 +7,9 @@ import { Redirect } from "react-router-dom";
 const ENDPOINT = "http://127.0.0.1:8090";
 
 export default function Table({rooms}) {
+  const socketRef = useRef(false);
   const [tableData, setTabledata] = useState(rooms);
+  const [roomData, setRoomData] = useState();
   const [currRoom, updateCurrRoom] = useState(false);
   const socket = io(ENDPOINT);
   const [state, setState] = useState({
@@ -21,18 +23,34 @@ export default function Table({rooms}) {
   });
 
 
-  function updateToDB (data) {
-    console.log(data);
-    socket.emit('update_rooms', data)
-  }
+
+  useEffect(() => {
+    if (socketRef.current) {
+       socket.emit('update_rooms', tableData)
+    }
+  }, [tableData])
+
+
+  useEffect(() => {
+    if (socketRef.current === 'create') {
+      socket.emit('create_room', roomData);
+    }
+
+    if (socketRef.current === 'delete') {
+      console.log("yo");
+      socket.emit('delete_room', roomData)
+    }
+
+  }, [roomData])
+
+
 
   return (
     <div>
-      {currRoom || currRoom === 0 ?
+      {currRoom  ?
         <Redirect
           to={{
-            pathname: `/room:${currRoom.uuid}`,
-            state: { referrer: currRoom }
+            pathname: `/room:${currRoom.uuid}`
           }}/> : null}
           <MaterialTable
             title="Chat Rooms"
@@ -44,13 +62,12 @@ export default function Table({rooms}) {
                 setTimeout(() => {
                   resolve();
                   setState((prevState) => {
+                    socketRef.current = "create";
                     newData.uuid = uuidv4();
-                    newData.messages = [];
-                    console.log(newData);
                     const data = [...prevState.data];
                     data.push(newData)
-                    console.log(data);
-                    updateToDB(data)
+                    setTabledata(data);
+                    setRoomData(prevState => ({...prevState, messages: [], uuid: newData.uuid}));
                     return { ...prevState, data };
                   });
                 }, 600);
@@ -61,9 +78,10 @@ export default function Table({rooms}) {
                   resolve();
                   if (oldData) {
                     setState((prevState) => {
+                      socketRef.current = "update";
                       const data = [...prevState.data];
                       data[data.indexOf(oldData)] = newData;
-                      updateToDB(data);
+                      setTabledata(data);
                       return { ...prevState, data };
                     });
                   }
@@ -74,9 +92,11 @@ export default function Table({rooms}) {
                 setTimeout(() => {
                   resolve();
                   setState((prevState) => {
+                    socketRef.current = "delete";
                     const data = [...prevState.data];
                     data.splice(data.indexOf(oldData), 1);
-                    updateToDB(data);
+                    setTabledata(data);
+                    setRoomData(prevState => ({...prevState, uuid: oldData.uuid}));
                     return { ...prevState, data };
                   });
                 }, 600);

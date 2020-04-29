@@ -7,18 +7,16 @@ const ENDPOINT = "http://127.0.0.1:8090";
 
 function Main() {
   const [roomData, setRoomData] = useState("");
+  const socket = io(ENDPOINT);
 
   useEffect(() => {
-    const socket = io(ENDPOINT);
-    getRooms(socket);
+    socket.emit('get_rooms', function (response) {
+      console.log(response);
+      setRoomData(response);
+    })
   }, [])
 
-  function getRooms (socket) {
-    socket.on('Rooms', (data) => {
-      setRoomData(data);
-      console.log(data);
-    })
-  }
+
   return (
     <div className="Main">
       <div className="Main__container">

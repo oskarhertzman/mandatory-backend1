@@ -1,3 +1,5 @@
+const server = require('./functions/functions.js');
+
 const http = require("http");
 const fs = require('fs');
 const express = require("express");
@@ -6,73 +8,46 @@ const socketIo = require("socket.io");
 const port = process.env.PORT || 8090;
 const index = require("./routes/index");
 const app = express();
-app.use(index);
-const server = http.createServer(app);
-const io = socketIo(server);
-let interval;
+const the_server = http.createServer(app);
+const io = socketIo(the_server);
 
 const ROOMS_PATH = './db/rooms/rooms.json';
+const ROOM_PATH = './db/room/';
 const rooms = JSON.parse(fs.readFileSync(ROOMS_PATH));
+let interval;
 
-const getRoomsandEmit = socket => {
-  const response = rooms;
-  socket.emit("Rooms", response);
-};
-
-function RoomSave (data) {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(ROOMS_PATH, JSON.stringify(data), function(err) {
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve();
-      }
-    })
-  })
-}
-
-function NewMessage (rooms, data) {
-// Ganska dålig lösning, ej skalbar
-const objIndex = rooms.findIndex((obj => obj.uuid == data.uuid));
-const updatedObj = { ...rooms[objIndex], messages: data.messages};
-const updatedArray = [...rooms.slice(0, objIndex), updatedObj, ...rooms.slice(objIndex + 1),];
-return new Promise((resolve, reject) => {
-  fs.writeFile(ROOMS_PATH, JSON.stringify(updatedArray), function(err) {
-    if (err) {
-      reject(err);
-    }
-    else {
-      resolve();
-    }
-  })
-})
-}
+app.use(index);
 
 io.on("connection", (socket) => {
-
   console.log("New client connected");
   if (interval) {
     clearInterval(interval);
   }
-  getRoomsandEmit(socket)
 
-  socket.on('get_room', function (data, callback) {
-    let result = rooms.filter(obj => {
-    return obj.uuid === data;
+  socket.on('get_rooms', function (callback) {
+    console.log("yo");
+    server.get_rooms(rooms, callback);
   })
-  callback(result);
-});
 
   socket.on('update_rooms', (data) => {
-    console.log(data);
-    RoomSave(data);
+    server.update_rooms(data, ROOMS_PATH)
   });
 
-  socket.on('new_message', (data) => {
-    console.log(data);
+  socket.on('get_room', function (data, callback) {
+    server.get_room(data, rooms, ROOM_PATH, callback)
+});
+
+  socket.on('create_room', (data) => {
+    server.create_room(data, ROOM_PATH);
+  })
+
+  socket.on('delete_room', (data) => {
+    server.delete_room(data, ROOM_PATH);
+  })
+
+  socket.on('new_message', (data, uuid) => {
     socket.broadcast.emit('new_message', data)
-    NewMessage(rooms, data);
+    server.new_message(data, uuid, ROOM_PATH);
   })
 
   socket.on("disconnect", () => {
@@ -83,4 +58,4 @@ io.on("connection", (socket) => {
 
 
 
-server.listen(port, () => console.log(`Listening on port ${port}`));
+the_server.listen(port, () => console.log(`Listening on port ${port}`));
