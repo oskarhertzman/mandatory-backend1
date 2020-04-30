@@ -1,13 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import axios from 'axios';
 import io from 'socket.io-client';
 import Table from '../components/Table.js';
 import '../styles/Main.scss';
 const ENDPOINT = "http://127.0.0.1:8090";
+const socket = io(ENDPOINT);
 
 function Main() {
   const [roomData, setRoomData] = useState("");
-  const socket = io(ENDPOINT);
+
 
   useEffect(() => {
     socket.emit('get_rooms', function (response) {

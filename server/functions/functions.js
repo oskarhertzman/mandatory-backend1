@@ -1,4 +1,7 @@
 const fs = require('fs');
+const fsp = require('fs').promises;
+
+// Promises are bae
 
 module.exports = {
 
@@ -19,58 +22,65 @@ module.exports = {
     })
   },
 
-  get_room: function GetRoom (data, rooms, path, callback) {
-    const roomByID = rooms.filter(obj => {
-      return obj.uuid === data;
-    })
-    const roomMessages = JSON.parse(fs.readFileSync(path + data + ".json")).messages;
-    const newArr1 = roomByID.map(v => ({...v, messages: roomMessages}))
-    callback(newArr1);
-  },
+  get_room: function GetRoom (uuid, rooms, path, callback) {
 
-  create_room: function CreateRoom (data, path) {
-    return new Promise((resolve, reject) => {
-      fs.writeFile(path + data.uuid + ".json", JSON.stringify(data), function(err) {
-        if (err) {
-          reject(err);
-        }
-        else {
-          resolve();
-        }
+    fsp.readFile((path + uuid + ".json")).then(data => {
+      const parsed = JSON.parse(data).messages;
+      const roomByID = rooms.filter(obj => {
+        return obj.uuid === uuid;
       })
+      const result = roomByID.map(v => ({...v, messages: parsed}))
+      return callback(result);
     })
   },
 
 
-  delete_room: function DeleteRoom (data) {
-    console.log(data);
-    return new Promise((resolve, reject) => {
-      fs.unlink(ROOM_PATH + data.uuid + ".json", function (err) {
-        if (err) {
-          reject(err);
-        }
-        else {
-          resolve();
-        }
+  update_room: function UpdateRoom (data, path, ref) {
+
+    if(ref === 'create') {
+      return new Promise((resolve, reject) => {
+        fs.writeFile(path + data.uuid + ".json", JSON.stringify(data), function(err) {
+          if (err) {
+            reject(err);
+          }
+          else {
+            resolve();
+          }
+        })
       })
-    })
+    }
+    if(ref === 'delete') {
+      return new Promise((resolve, reject) => {
+        fs.unlink(path + data.uuid + ".json", function (err) {
+          if (err) {
+            reject(err);
+          }
+          else {
+            resolve();
+          }
+        })
+      })
+    }
   },
 
-  new_message: function NewMessage (data, uuid, path) {
 
-    const roomMessages = JSON.parse(fs.readFileSync(path + uuid + ".json"));
-    roomMessages.messages.push(data);
-    console.log(roomMessages);
 
-    return new Promise((resolve, reject) => {
-      fs.writeFile(path + uuid + ".json", JSON.stringify(roomMessages), function(err) {
-        if (err) {
-          reject(err);
-        }
-        else {
-          resolve();
-        }
+  new_message: function NewMessage (message, uuid, path) {
+
+    fsp.readFile((path + uuid + ".json")).then(data => {
+      const all_messages = JSON.parse(data);
+      all_messages.messages.push(message);
+      return new Promise((resolve, reject) => {
+        fs.writeFile(path + uuid + ".json", JSON.stringify(all_messages), function(err) {
+          if (err) {
+            reject(err);
+          }
+          else {
+            resolve();
+          }
+        })
       })
     })
+
   }
 };

@@ -29,15 +29,17 @@ io.on("connection", (socket) => {
     server.get_rooms(rooms, callback);
   })
 
-  socket.on('update_rooms', (data) => {
-    server.update_rooms(data, ROOMS_PATH)
-  });
+  socket.on('update_rooms', (rooms, room, ref) => {
+    server.update_rooms(rooms, ROOMS_PATH);
+    server.update_room(room, ROOM_PATH, ref);
+  })
 
-  socket.on('get_room', function (data, callback) {
-    server.get_room(data, rooms, ROOM_PATH, callback)
-});
+  socket.on('get_room', function (uuid, callback) {
+    server.get_room(uuid, rooms, ROOM_PATH, callback);
+})
 
   socket.on('create_room', (data) => {
+    console.log(data);
     server.create_room(data, ROOM_PATH);
   })
 
@@ -53,7 +55,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("Client disconnected");
     clearInterval(interval);
-  });
+  })
 });
 
 

@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import io from 'socket.io-client';
-import MaterialTable, { MTableToolbar } from 'material-table';
+import MaterialTable from 'material-table';
 import { v4 as uuidv4 } from 'uuid';
 import { Redirect } from "react-router-dom";
 const ENDPOINT = "http://127.0.0.1:8090";
+const socket = io(ENDPOINT);
 
 export default function Table({rooms}) {
   const socketRef = useRef(false);
   const [tableData, setTabledata] = useState(rooms);
   const [roomData, setRoomData] = useState();
   const [currRoom, updateCurrRoom] = useState(false);
-  const socket = io(ENDPOINT);
   const [state, setState] = useState({
     columns: [
       { title: 'Name', field: 'name' },
@@ -26,22 +25,11 @@ export default function Table({rooms}) {
 
   useEffect(() => {
     if (socketRef.current) {
-       socket.emit('update_rooms', tableData)
+       socket.emit('update_rooms', tableData, roomData, socketRef.current )
     }
   }, [tableData])
 
 
-  useEffect(() => {
-    if (socketRef.current === 'create') {
-      socket.emit('create_room', roomData);
-    }
-
-    if (socketRef.current === 'delete') {
-      console.log("yo");
-      socket.emit('delete_room', roomData)
-    }
-
-  }, [roomData])
 
 
 
@@ -78,7 +66,6 @@ export default function Table({rooms}) {
                   resolve();
                   if (oldData) {
                     setState((prevState) => {
-                      socketRef.current = "update";
                       const data = [...prevState.data];
                       data[data.indexOf(oldData)] = newData;
                       setTabledata(data);
