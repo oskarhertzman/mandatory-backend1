@@ -8,14 +8,11 @@ const socket = io(ENDPOINT);
 function Main() {
   const [roomData, setRoomData] = useState("");
 
-
   useEffect(() => {
     socket.emit('get_rooms', function (response) {
-      console.log(response);
       setRoomData(response);
     })
   }, [])
-
 
   return (
     <div className="Main">

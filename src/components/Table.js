@@ -21,17 +21,23 @@ export default function Table({rooms}) {
     data: tableData
   });
 
+  useEffect(() => {
+    socket.on('new_room', function (data) {
+      setState(prevState => ({ ...prevState, data: data}));
+    })
+
+    return () => {
+      socket.off('new_room');
+    }
+  }, [])
 
 
   useEffect(() => {
     if (socketRef.current) {
-       socket.emit('update_rooms', tableData, roomData, socketRef.current )
+      socket.emit('update_rooms', tableData, roomData, socketRef.current)
+      socketRef.current = false;
     }
-  }, [tableData])
-
-
-
-
+  }, [tableData, roomData])
 
   return (
     <div>
@@ -66,6 +72,7 @@ export default function Table({rooms}) {
                   resolve();
                   if (oldData) {
                     setState((prevState) => {
+                      socketRef.current = "update";
                       const data = [...prevState.data];
                       data[data.indexOf(oldData)] = newData;
                       setTabledata(data);

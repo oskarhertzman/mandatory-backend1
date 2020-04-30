@@ -31,6 +31,11 @@ module.exports = {
       })
       const result = roomByID.map(v => ({...v, messages: parsed}))
       return callback(result);
+    }).catch(error => {
+      const roomByID = rooms.filter(obj => {
+        return obj.uuid === uuid;
+      })
+      return callback({error_404: "room not found", referance: roomByID});
     })
   },
 
@@ -64,9 +69,7 @@ module.exports = {
   },
 
 
-
   new_message: function NewMessage (message, uuid, path) {
-
     fsp.readFile((path + uuid + ".json")).then(data => {
       const all_messages = JSON.parse(data);
       all_messages.messages.push(message);
