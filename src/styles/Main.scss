@@ -3,6 +3,19 @@
 
 .Main {
 
+  &__header {
+    color: $SecondTheme;
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    margin-top: 50px;
+    h1 {
+      padding-right: 10px;
+    }
+    img {
+      width: 5%;
+    }
+  }
   &__container {
     @include centerer;
   }

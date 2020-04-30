@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import MaterialTable from 'material-table';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import { enterTheme } from '../themes/Theme.js';
 import { v4 as uuidv4 } from 'uuid';
 import { Redirect } from "react-router-dom";
 const ENDPOINT = "http://127.0.0.1:8090";
 const socket = io(ENDPOINT);
 
-export default function Table({rooms}) {
+
+
+export default function Table({rooms, props}) {
   const socketRef = useRef(false);
+  const classes = enterTheme(props);
   const [tableData, setTabledata] = useState(rooms);
   const [roomData, setRoomData] = useState();
   const [currRoom, updateCurrRoom] = useState(false);
@@ -16,7 +21,7 @@ export default function Table({rooms}) {
       { title: 'Name', field: 'name' },
       { title: 'Type', field: 'type' },
       { title: 'Topic', field: 'topic' },
-      { title: '', field: 'enter', render: rowData => <button onClick={() => updateCurrRoom(rowData)}>Enter </button>},
+      { title: '', field: 'enter', render: rowData => <ArrowForwardIcon className={classes.root} onClick={() => updateCurrRoom(rowData)}></ArrowForwardIcon>},
     ],
     data: tableData
   });

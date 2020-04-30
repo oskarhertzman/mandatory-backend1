@@ -1,12 +1,12 @@
 // Variables
-$MainTheme: #57518A;
-$SecondTheme: #f1c3d0;
+$MainTheme: #913030;
+$SecondTheme: #ffffff;
 
 // Mixins
 @mixin gradient {
-  background: #bdc3c7;
-  background: -webkit-linear-gradient(to right, #2c3e50, #bdc3c7) no-repeat center center fixed;;  
-  background: linear-gradient(to right, #2c3e50, #bdc3c7) no-repeat center center fixed;
+  background: #a73737;
+  background: -webkit-linear-gradient(to right, #7a2828, #a73737) no-repeat center center fixed;
+  background: linear-gradient(to right, #7a2828, #a73737) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

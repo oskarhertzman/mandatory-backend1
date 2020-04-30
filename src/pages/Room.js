@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef} from 'react';
-import { Redirect } from "react-router-dom";
 import FormDialog from '../components/Dialog.js';
 import { paperTheme } from '../themes/Theme.js';
 import { Paper } from '@material-ui/core';
@@ -54,37 +53,39 @@ function Room(props) {
 
   return (
     <div className="Room">
-      {error ? null :
-        <div className="Room__container">
-          <Paper style={paperTheme.paper} elevation={3} >
-            <p>Welcome to {room.name} </p>
-            <div className="Room__container__chat">
-              {room.messages.map((message, index) => {
-                return (
-                  <div className={["Room__container__chat__message", index].join(' ')} key={index}>
-                    <p>Name: {message.name} </p>
-                    <p>Message: {message.message} </p>
-                  </div>
-                )
-              })}
-            </div>
+      {error || !name.name ? null :
+      <div className="Room__container">
+        <Paper style={paperTheme.paper} elevation={3} >
+          <p>Welcome to {room.name} </p>
+          <div className="Room__container__chat">
+            {room.messages.map((message, index) => {
+              return (
+                <div className={["Room__container__chat__message", index].join(' ')} key={index}>
+                  <p>Name: {message.name} </p>
+                  <p>Message: {message.message} </p>
+                </div>
+              )
+            })}
+          </div>
+          <div className="Room__container__user">
             <form onSubmit={sendMessage}>
-              <p>User: {name.name}</p>
               <input type="text" onChange={onMessageChange} placeholder="Message" name="message" required />
               <input type="submit" />
             </form>
-          </Paper>
-        </div>
+            <p>User: {name.name}</p>
+          </div>
+        </Paper>
+      </div>
       }
 
       <FormDialog
         name={name}
         updateName={updateName}
         error={error}
-        referance={referance}
+        server_ref={referance}
       />
-      </div>
-    );
-  }
+    </div>
+  );
+}
 
-  export default Room;
+export default Room;

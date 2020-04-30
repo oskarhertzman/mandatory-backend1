@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Redirect } from "react-router-dom";
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -8,17 +8,18 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-export default function FormDialog({name, updateName, error, referance}) {
+export default function FormDialog({name, updateName, error, server_ref}) {
   const [open, setOpen] = useState(true);
   const [back, toBack] = useState(false);
   const [inputError, setInputError] = useState(error);
   const [errorRef, setErrorRef] = useState({name: "", type: "", topic: ""})
+  const [nameRef, setNameRef] = useState(name);
 
   useEffect(() => {
-    if(referance){
-      setErrorRef(referance)
+    if(server_ref){
+      setErrorRef(server_ref)
     }
-  }, [referance])
+  }, [server_ref])
 
 
   const handleBack = () => {
@@ -26,17 +27,19 @@ export default function FormDialog({name, updateName, error, referance}) {
   };
 
   const handleEnter = (e) => {
-    if (name.name) {
+    updateName(nameRef);
+
+    if (nameRef.name) {
       setOpen(false);
     }
-    else {
+    else  {
       setInputError(true);
     }
   };
 
   function handleInputChange (e) {
     let target = e.target.value
-    updateName(prevState => ({...prevState, name: target}));
+    setNameRef(prevState => ({...prevState, name: target}));
   }
 
   return (
