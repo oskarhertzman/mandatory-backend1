@@ -1,11 +1,13 @@
 import React, {useState, useEffect, useRef} from 'react';
 import FormDialog from '../components/Dialog.js';
 import { paperTheme } from '../themes/Theme.js';
+import nav from '../utilities/nav';
 import { Paper } from '@material-ui/core';
 import io from 'socket.io-client';
 import '../styles/Rooms.scss';
 const ENDPOINT = "http://127.0.0.1:8090";
 const socket = io(ENDPOINT);
+nav(window.location.pathname)
 
 
 function Room(props) {
@@ -17,7 +19,11 @@ function Room(props) {
   const serverRef = useRef(false);
   const uuid = window.location.pathname.split(':')[1];
 
+
+
   useEffect(() => {
+
+    console.log(props);
     socket.emit('get_room', uuid, function (response) {
       console.log(response);
       if(response.error_404){
@@ -77,13 +83,16 @@ function Room(props) {
         </Paper>
       </div>
       }
+      {room.name || error ?
+        <FormDialog
+          name={name}
+          room={room}
+          updateName={updateName}
+          error={error}
+          server_ref={referance}
+        /> : null
+        }
 
-      <FormDialog
-        name={name}
-        updateName={updateName}
-        error={error}
-        server_ref={referance}
-      />
     </div>
   );
 }

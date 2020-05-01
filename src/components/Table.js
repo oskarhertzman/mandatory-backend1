@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import MaterialTable from 'material-table';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { enterTheme } from '../themes/Theme.js';
+import history from "../utilities/history";
 import { v4 as uuidv4 } from 'uuid';
 import { Redirect } from "react-router-dom";
 const ENDPOINT = "http://127.0.0.1:8090";
@@ -35,7 +36,6 @@ export default function Table({rooms, props}) {
       socket.off('new_room');
     }
   }, [])
-
 
   useEffect(() => {
     if (socketRef.current) {
