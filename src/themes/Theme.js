@@ -1,9 +1,11 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 
+//Colors
 export const MainTheme = '#913030';
 export const SecondTheme = '#cccccc';
 
+//Themes
 export const paperTheme = {
   paper: {
     width: '80vw',
@@ -17,7 +19,6 @@ export const paperTheme = {
   },
 };
 
-
 export const enterTheme = makeStyles({
   root: {
     color: MainTheme,
@@ -26,3 +27,12 @@ export const enterTheme = makeStyles({
     }
   }
 })
+
+export const inputTheme = makeStyles((theme) => ({
+  message: {
+
+  },
+  button: {
+    
+  }
+}));

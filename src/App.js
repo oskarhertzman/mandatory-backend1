@@ -1,12 +1,13 @@
 import React from 'react';
-import Main from './pages/Main';
-import Room from './pages/Room';
 import { Router, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
+
+import Main from './pages/Main';
+import Room from './pages/Room';
 import history from "./utilities/history";
 import './styles/App.scss';
 
-function App() {
+export default function App() {
   return (
     <div className="App">
       <HelmetProvider>
@@ -18,5 +19,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

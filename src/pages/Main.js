@@ -1,14 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import io from 'socket.io-client';
+
 import Table from '../components/Table.js';
 import svg from '../assets/socket-io.png';
 import nav from '../utilities/nav';
 import '../styles/Main.scss';
+
 const ENDPOINT = "http://127.0.0.1:8090";
 const socket = io(ENDPOINT);
+
 nav('/');
 
-function Main(props) {
+export default function Main(props) {
   const [roomData, setRoomData] = useState("");
 
   useEffect(() => {
@@ -26,12 +29,10 @@ function Main(props) {
       <div className="Main__container">
         {
           (roomData) ?
-            <Table
+          <Table
             rooms={roomData}/> : null
           }
         </div>
       </div>
     );
   }
-
-  export default Main;

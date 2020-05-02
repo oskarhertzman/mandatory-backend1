@@ -1,9 +1,9 @@
 @import "./Variables";
 
 .Room {
-
+  @include centerer;
   &__container {
-    @include centerer;
+    position: relative;
 
     &__chat {
 
@@ -13,9 +13,33 @@
           display: inline;
         }
       }
+    }
 
-      &__user {
-        
+    &__user {
+      position: absolute;
+      bottom: 0;
+      margin: 0 auto;
+      margin-bottom: 20px;
+
+      form {
+        position: relative;
+        button {
+          height: 60px;
+          width: 80px;
+          margin-left: 10px;
+        }
+      }
+
+      &__info {
+        margin-top: 10px;
+        margin-bottom: 30px;
+        position: relative;
+        p {
+          vertical-align: middle;
+          line-height: 0;
+          position: absolute;
+          left: 0;
+        }
       }
     }
   }

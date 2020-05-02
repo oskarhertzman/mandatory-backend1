@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect } from "react-router-dom";
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -28,7 +28,6 @@ export default function FormDialog({name, room, updateName, error, server_ref}) 
 
   const handleEnter = (e) => {
     updateName(nameRef);
-
     if (nameRef.name) {
       setOpen(false);
     }
