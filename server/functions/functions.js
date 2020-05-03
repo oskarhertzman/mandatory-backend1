@@ -23,7 +23,6 @@ module.exports = {
   },
 
   get_room: function GetRoom (uuid, rooms, path, callback) {
-
     fsp.readFile((path + uuid + ".json")).then(data => {
       const parsed = JSON.parse(data).messages;
       const roomByID = rooms.filter(obj => {
@@ -39,9 +38,7 @@ module.exports = {
     })
   },
 
-
   update_room: function UpdateRoom (data, path, ref) {
-
     if(ref === 'create') {
       return new Promise((resolve, reject) => {
         fs.writeFile(path + data.uuid + ".json", JSON.stringify(data), function(err) {
@@ -68,7 +65,6 @@ module.exports = {
     }
   },
 
-
   new_message: function NewMessage (message, uuid, path) {
     fsp.readFile((path + uuid + ".json")).then(data => {
       const all_messages = JSON.parse(data);
@@ -84,6 +80,5 @@ module.exports = {
         })
       })
     })
-
   }
 };

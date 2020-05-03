@@ -22,11 +22,11 @@ export default function FormDialog({name, room, updateName, error, server_ref}) 
   }, [server_ref])
 
 
-  const handleBack = () => {
+  function handleBack () {
     toBack(true);
   };
 
-  const handleEnter = (e) => {
+  function handleEnter () {
     updateName(nameRef);
     if (nameRef.name) {
       setOpen(false);
@@ -48,50 +48,51 @@ export default function FormDialog({name, room, updateName, error, server_ref}) 
           to={{
             pathname: `/`
           }}/> : null}
-      <Dialog
-        open={open}
-        onClose={handleEnter || handleBack}
-        aria-labelledby="form-dialog-title"
-        disableBackdropClick={true}
-        disableEscapeKeyDown={true}
-      >
-        <DialogTitle id="form-dialog-title">{error ? 'Error 404' : 'Username'}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {error ? 'The room was not found on the server, click the button to go back'
-            : `To use ${room.name}, please enter your username here.`}
-            {error && errorRef.name.length > 0 ? <div> Please delete this room from the main menu, since its now useless:
-              <ul style={{fontWeight: 'bold'}}>
-                <li>Room: {errorRef.name} </li>
-                <li>Type: {errorRef.type}</li>
-                <li>Topic: {errorRef.topic}</li>
-              </ul>
-            </div> : null}
-          </DialogContentText>
-          {error ? null :
-          <TextField
-            required={true}
-            error={inputError}
-            onChange={handleInputChange}
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Username"
-            type="text"
-            fullWidth
-          /> }
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleBack} color="primary">
-            GO BACK
-          </Button>
-          {error ? null :
-          <Button onClick={handleEnter} color="primary">
-            Enter
-          </Button>
-          }
-        </DialogActions>
-      </Dialog>
-    </div>
-        );
-      }
+          <Dialog
+            open={open}
+            onClose={handleEnter || handleBack}
+            aria-labelledby="form-dialog-title"
+            disableBackdropClick={true}
+            disableEscapeKeyDown={true}
+            >
+              <DialogTitle id="form-dialog-title">{error ? 'Error 404' : 'Username'}</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  {error ? 'The room was not found on the server, click the button to go back'
+                  : `To use ${room.name}, please enter your username here.`}
+                  {error && errorRef.name.length > 0 ? <div> Please delete this room from the main menu, since its now useless:
+                    <ul style={{fontWeight: 'bold'}}>
+                      <li>Room: {errorRef.name}</li>
+                      <li>Type: {errorRef.type}</li>
+                      <li>Topic: {errorRef.topic}</li>
+                    </ul>
+                  </div> : null}
+                </DialogContentText>
+                {error ? null :
+                  <TextField
+                    autoComplete="off"
+                    required={true}
+                    error={inputError}
+                    onChange={handleInputChange}
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    label="Username"
+                    type="text"
+                    fullWidth
+                  /> }
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleBack} color="primary">
+                    GO BACK
+                  </Button>
+                  {error ? null :
+                    <Button onClick={handleEnter} color="primary">
+                      Enter
+                    </Button>
+                  }
+                </DialogActions>
+              </Dialog>
+            </div>
+          );
+        }

@@ -1,18 +1,17 @@
 import React, {useState, useEffect} from 'react';
+import Loader from 'react-loader-spinner'
 import io from 'socket.io-client';
+
 
 import Table from '../components/Table.js';
 import svg from '../assets/socket-io.png';
-import nav from '../utilities/nav';
 import '../styles/Main.scss';
 
 const ENDPOINT = "http://127.0.0.1:8090";
 const socket = io(ENDPOINT);
 
-nav('/');
-
 export default function Main(props) {
-  const [roomData, setRoomData] = useState("");
+  const [roomData, setRoomData] = useState();
 
   useEffect(() => {
     socket.emit('get_rooms', function (response) {
@@ -30,9 +29,18 @@ export default function Main(props) {
         {
           (roomData) ?
           <Table
-            rooms={roomData}/> : null
-          }
-        </div>
+            rooms={roomData}
+            socket={socket}
+          /> :
+          <Loader
+            type="Oval"
+            color="white"
+            height={100}
+            width={100}
+            timeout={1000} //3 secs
+          />
+        }
       </div>
-    );
-  }
+    </div>
+  );
+}

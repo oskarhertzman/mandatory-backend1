@@ -1,48 +1,44 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Redirect } from "react-router-dom";
-import io from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import MaterialTable from 'material-table';
 
 import { enterTheme } from '../themes/Theme.js';
 
-const ENDPOINT = "http://127.0.0.1:8090";
-const socket = io(ENDPOINT);
-
-export default function Table({rooms, props}) {
+export default function Table({rooms, props, socket}) {
   const socketRef = useRef(false);
   const classes = enterTheme(props);
   const [tableData, setTabledata] = useState(rooms);
   const [roomData, setRoomData] = useState();
   const [currRoom, updateCurrRoom] = useState(false);
-  const [state, setState] = useState({
+  const [columns, setColumns] = useState({
     columns: [
       { title: 'Name', field: 'name' },
       { title: 'Type', field: 'type' },
       { title: 'Topic', field: 'topic' },
       { title: '', field: 'password', render: rowData => <ArrowForwardIcon className={classes.root} onClick={() => updateCurrRoom(rowData)}></ArrowForwardIcon>},
     ],
-    data: tableData
+    data: tableData,
   });
+
 
   useEffect(() => {
     socket.on('new_room', function (data) {
-      setState(prevState => ({ ...prevState, data: data}));
+      setColumns(prevState => ({ ...prevState, data: data}));
     })
-
     return () => {
       socket.off('new_room');
     }
-  }, [])
+  }, [rooms, socket, tableData])
 
   useEffect(() => {
     if (socketRef.current) {
       console.log(tableData);
-      // socket.emit('update_rooms', tableData, roomData, socketRef.current)
+      socket.emit('update_rooms', tableData, roomData, socketRef.current)
       socketRef.current = false;
     }
-  }, [tableData, roomData])
+  }, [tableData, roomData, socket])
 
   return (
     <div>
@@ -51,16 +47,16 @@ export default function Table({rooms, props}) {
           to={{
             pathname: `/room:${currRoom.uuid}`
           }}/> : null}
-      <MaterialTable
-        title="Chat Rooms"
-        columns={state.columns}
-        data={state.data}
+          <MaterialTable
+            title="Chat Rooms"
+            columns={columns.columns}
+            data={columns.data}
             editable={{
               onRowAdd: (newData) =>
               new Promise((resolve) => {
                 setTimeout(() => {
                   resolve();
-                  setState((prevState) => {
+                  setColumns((prevState) => {
                     socketRef.current = "create";
                     newData.uuid = uuidv4();
                     const data = [...prevState.data];
@@ -76,7 +72,7 @@ export default function Table({rooms, props}) {
                 setTimeout(() => {
                   resolve();
                   if (oldData) {
-                    setState((prevState) => {
+                    setColumns((prevState) => {
                       socketRef.current = "update";
                       const data = [...prevState.data];
                       data[data.indexOf(oldData)] = newData;
@@ -90,7 +86,7 @@ export default function Table({rooms, props}) {
               new Promise((resolve) => {
                 setTimeout(() => {
                   resolve();
-                  setState((prevState) => {
+                  setColumns((prevState) => {
                     socketRef.current = "delete";
                     const data = [...prevState.data];
                     data.splice(data.indexOf(oldData), 1);

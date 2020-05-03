@@ -5,9 +5,75 @@
   &__container {
     position: relative;
 
+    &__header {
+      width: 100%;
+      padding-left: 50px;
+    }
+
     &__chat {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 100%;
+      max-height: 500px;
+      overflow: auto;
+
+      .bubble {
+        width: 150px;
+        margin: 40px;
+        background-color: #F2F2F2;
+        border-radius: 5px;
+        box-shadow: 0 0 6px #B2B2B2;
+        display: block;
+        padding: 10px 18px;
+        position: relative;
+        vertical-align: top;
+        color: white;
+        word-wrap: break-word;
+      }
+
+      .bubble::before {
+        background-color: #F2F2F2;
+        content: "\00a0";
+        display: block;
+        height: 16px;
+        position: absolute;
+        top: 11px;
+        transform:         rotate( 29deg ) skew( -35deg );
+        -moz-transform:    rotate( 29deg ) skew( -35deg );
+        -ms-transform:     rotate( 29deg ) skew( -35deg );
+        -o-transform:      rotate( 29deg ) skew( -35deg );
+        -webkit-transform: rotate( 29deg ) skew( -35deg );
+        width:  20px;
+      }
+
+      .you {
+        align-self: flex-start;
+        background-color: $You;
+        margin-left: 150px;
+      }
+
+      .you::before {
+        box-shadow: -2px 2px 2px 0 rgba( 178, 178, 178, .4 );
+        left: -9px;
+        background-color: $You;
+      }
+
+      .me {
+        align-self: flex-end;
+        background-color: $Me;
+        margin-right:150px;
+      }
+
+      .me::before {
+        box-shadow: 2px -2px 2px 0 rgba( 178, 178, 178, .4 );
+        right: -9px;
+        background-color: $Me;
+      }
 
       &__message {
+
+
 
         p {
           display: inline;
@@ -23,9 +89,13 @@
 
       form {
         position: relative;
+
+        input {
+          width: 500px;
+        }
         button {
           height: 60px;
-          width: 80px;
+          width: 110px;
           margin-left: 10px;
         }
       }
