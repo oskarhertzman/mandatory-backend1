@@ -1,14 +1,14 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 //Colors
-export const MainTheme = '#913030';
-export const SecondTheme = '#cccccc';
+export const MainTheme = '#586d8e';
+export const DotTheme = '#67c4c8';
 
 //Themes
 export const paperTheme = {
   paper: {
-    width: '80vw',
-    height: '80vh',
+    width: '90vw',
+    height: '90vh',
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
@@ -27,9 +27,6 @@ export const enterTheme = makeStyles({
 
 export const inputTheme = makeStyles((theme) => ({
   message: {
-
-  },
-  button: {
-
+  width: '100%',
   }
 }));

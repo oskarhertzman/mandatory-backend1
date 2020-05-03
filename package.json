@@ -11,6 +11,8 @@
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.19.2",
     "express": "^4.17.1",
+    "lodash": "^4.17.15",
+    "lodash.debounce": "^4.0.8",
     "material-table": "^1.57.2",
     "mysql": "^2.18.1",
     "node-sass": "^4.14.0",

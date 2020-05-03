@@ -3,114 +3,156 @@
 .Room {
   @include centerer;
   &__container {
-    position: relative;
-
+    width: 100%;
+    height: 100%;
     &__header {
-      width: 100%;
-      padding-left: 50px;
-    }
-
-    &__chat {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      width: 100%;
-      max-height: 500px;
-      overflow: auto;
-
-      .bubble {
-        width: 150px;
-        margin: 40px;
-        background-color: #F2F2F2;
-        border-radius: 5px;
-        box-shadow: 0 0 6px #B2B2B2;
-        display: block;
-        padding: 10px 18px;
-        position: relative;
-        vertical-align: top;
+      z-index: 1;
+      width: inherit;
+      background-color: $MainTheme;
+      height: 60px;
+      h1 {
+        vertical-align: middle;
+        padding-left: 50px;
         color: white;
-        word-wrap: break-word;
-      }
-
-      .bubble::before {
-        background-color: #F2F2F2;
-        content: "\00a0";
-        display: block;
-        height: 16px;
-        position: absolute;
-        top: 11px;
-        transform:         rotate( 29deg ) skew( -35deg );
-        -moz-transform:    rotate( 29deg ) skew( -35deg );
-        -ms-transform:     rotate( 29deg ) skew( -35deg );
-        -o-transform:      rotate( 29deg ) skew( -35deg );
-        -webkit-transform: rotate( 29deg ) skew( -35deg );
-        width:  20px;
-      }
-
-      .you {
-        align-self: flex-start;
-        background-color: $You;
-        margin-left: 150px;
-      }
-
-      .you::before {
-        box-shadow: -2px 2px 2px 0 rgba( 178, 178, 178, .4 );
-        left: -9px;
-        background-color: $You;
-      }
-
-      .me {
-        align-self: flex-end;
-        background-color: $Me;
-        margin-right:150px;
-      }
-
-      .me::before {
-        box-shadow: 2px -2px 2px 0 rgba( 178, 178, 178, .4 );
-        right: -9px;
-        background-color: $Me;
-      }
-
-      &__message {
-
-
-
-        p {
-          display: inline;
-        }
       }
     }
 
-    &__user {
-      position: absolute;
-      bottom: 0;
-      margin: 0 auto;
-      margin-bottom: 20px;
+    &__main {
+      display: flex;
+      width: inherit;
+      height: calc(100% - 60px);
 
-      form {
-        position: relative;
+      &__left {
+        width: 20%;
+        -webkit-box-shadow: 0px 0px 23px 2px rgba(209,209,209,1);
+        -moz-box-shadow: 0px 0px 23px 2px rgba(209,209,209,1);
+        box-shadow: 0px 0px 23px 2px rgba(209,209,209,1);
 
-        input {
-          width: 500px;
-        }
-        button {
-          height: 60px;
-          width: 110px;
-          margin-left: 10px;
+        .title {
+          color: $TextOnWhite;
+          text-align: center;
         }
       }
 
-      &__info {
-        margin-top: 10px;
-        margin-bottom: 30px;
+      &__center {
+        width: 60%;
         position: relative;
-        p {
-          vertical-align: middle;
-          line-height: 0;
+        &__chat {
+          background-color: $ChatBG;
+          display: flex;
+          flex-direction: column;
+          height: 92%;
+          overflow: auto;
+
+
+
+
+          .bubble {
+            min-width: 200px;
+            max-width: 550px;
+
+            margin: 40px;
+            background-color: white;
+            -webkit-box-shadow: 0px 0px 7px 0px rgba(184,184,184,1);
+            -moz-box-shadow: 0px 0px 7px 0px rgba(184,184,184,1);
+            box-shadow: 0px 0px 7px 0px rgba(184,184,184,1);
+            display: block;
+            padding: 10px 18px;
+            position: relative;
+            vertical-align: top;
+            color: $TextOnWhite;
+            word-wrap: break-word;
+          }
+
+          .bubble::before {
+            background-color: white;
+            content: "\00a0";
+            display: block;
+            height: 16px;
+            position: absolute;
+            top: 11px;
+            transform:         rotate( 29deg ) skew( -35deg );
+            -moz-transform:    rotate( 29deg ) skew( -35deg );
+            -ms-transform:     rotate( 29deg ) skew( -35deg );
+            -o-transform:      rotate( 29deg ) skew( -35deg );
+            -webkit-transform: rotate( 29deg ) skew( -35deg );
+            width:  20px;
+          }
+
+          .you {
+            align-self: flex-start;
+            margin-left: 100px;
+          }
+
+          .you::before {
+            box-shadow: -2px 2px 2px 0 rgba(184,184,184,0.4);
+            left: -9px;
+          }
+
+          .me {
+            align-self: flex-end;
+            margin-right:100px;
+          }
+
+          .me::before {
+            box-shadow: 2px -2px 2px 0 rgba(184,184,184,0.4);
+            right: -9px;
+          }
+
+          &__message {
+            display: block;
+
+            &__message {
+
+
+            }
+            &__name {
+              font-weight: bold;
+              text-transform: capitalize;
+              color: $Name;
+            }
+
+          }
+        }
+
+        &__user {
+          height: 10%;
+          padding-left: 20px;
+          form {
+
+            input {
+              width: 97%;
+            }
+            button {
+              height: 60px;
+              width: 110px;
+              margin-left: 10px;
+            }
+          }
+        }
+      }
+      &__right {
+        position: relative;
+        width: 20%;
+        -webkit-box-shadow: 0px 0px 23px 2px rgba(209,209,209,1);
+        -moz-box-shadow: 0px 0px 23px 2px rgba(209,209,209,1);
+        box-shadow: 0px 0px 23px 2px rgba(209,209,209,1);
+
+        &__user {
+          background-color: $UserInfo;
           position: absolute;
-          left: 0;
+          top: 0;
+          width: 100%;
+          height: 120px;
+          text-align: center;
+          text-transform: capitalize;
+          color: white;
         }
       }
     }
   }
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

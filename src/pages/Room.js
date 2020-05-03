@@ -1,13 +1,15 @@
 import React, {useState, useEffect, useRef, useCallback } from 'react';
+import Loader from 'react-loader-spinner'
+import debounce from "lodash/debounce";
 import io from 'socket.io-client';
 import { Paper } from '@material-ui/core';
 import { TextField } from '@material-ui/core';
-import { Button } from '@material-ui/core';
-import SendIcon from '@material-ui/icons/Send';
+
+
 
 import FormDialog from '../components/Dialog.js';
 import { paperTheme } from '../themes/Theme.js';
-import { inputTheme } from '../themes/Theme.js';
+import { inputTheme, DotTheme } from '../themes/Theme.js';
 import nav from '../utilities/nav';
 import '../styles/Rooms.scss';
 
@@ -15,43 +17,23 @@ const ENDPOINT = "http://127.0.0.1:8090";
 const socket = io(ENDPOINT);
 nav(window.location.pathname)
 
-function useHookWithRefCallback() {
-  const ref = useRef(null)
-  const setRef = useCallback(node => {
-    if (ref.current) {
-      // Make sure to cleanup any events/references added to the last instance
-    }
-
-    if (node) {
-      // Check if a node is actually passed. Otherwise node would be null.
-      // You can now do what you need to, addEventListeners, measure, etc.
-    }
-
-    // Save a reference to the node
-    ref.current = node
-  }, [])
-
-  return [setRef]
-}
 
 export default function Room(props) {
   const [room, updateRoom] = useState({name: '', messages: []});
   const [name, updateName] = useState({name: ''});
   const [message, updateMessage] = useState({message: ''});
   const [referance, setReferance] = useState(false);
+  const [meTyping, setMeTyping] = useState(false);
+  const [themTyping, setThemTyping] = useState(false);
   const [error, setError] = useState(false);
   const messagesEndRef = useRef(null)
   const serverRef = useRef(false);
-  const classes = inputTheme();
+  const debounceLoadData = useCallback(debounce(() => {
+    setMeTyping(false);
+  }, 3000), []);
+  const inputThemes = inputTheme();
   const uuid = window.location.pathname.split(':')[1];
 
-
-  useEffect(() => {
-    if (room.name.length > 0) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-    }
-  }, [])
-  
   useEffect(() => {
     socket.emit('get_room', uuid, function (response) {
       console.log(response);
@@ -69,25 +51,48 @@ export default function Room(props) {
       updateRoom(prevState => ({...prevState, messages: [...prevState.messages, data]}));
       serverRef.current = false;
     })
+    socket.on('typing', function (data) {
+      setThemTyping(data.typing);
+    })
     return () => {
       socket.off('new_message');
+      socket.off('typing');
     }
   }, [uuid])
+
+  useEffect(() => {
+    if (name.name) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  useEffect (() => {
+    if (meTyping) {
+      socket.emit('typing', {typing: meTyping})
+    }
+    else {
+      socket.emit('typing', {typing: meTyping})
+    }
+  },[meTyping])
 
 
   function sendMessage(e) {
     e.preventDefault();
+    setMeTyping(false);
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     const merged = {...name, ...message}
+    console.log(merged);
     socket.emit('new_message', merged, uuid)
     updateRoom(prevState => ({...prevState, messages: [...prevState.messages, merged]}));
   }
 
   function onMessageChange (e) {
     let target = e.target.value
+    console.log(target);
     updateMessage(prevState => ({...prevState, message: target}));
+    setMeTyping(true)
+    debounceLoadData();
   }
-
 
   return (
     <div className="Room">
@@ -95,32 +100,62 @@ export default function Room(props) {
         <div className="Room__container">
           <Paper style={paperTheme.paper} elevation={3} >
             <div className="Room__container__header">
-              <h1>{room.name}</h1>
             </div>
-            <div className="Room__container__chat">
-              {room.messages.map((message, index) => {
-                return (
-                  <div className={["Room__container__chat__message bubble", index + 1, (name.name === message.name ? "me" : "you")].join(' ')} key={index}>
-                      <p>Message: {message.message} </p>
-                      <p>Name: {message.name} </p>
-                  </div>
-                )
-              })}
-            <div ref={messagesEndRef} />
+            <div className="Room__container__main">
+              <div className="Room__container__main__left">
+                <h1 className="title">{room.name}</h1>
+
               </div>
-            <div className="Room__container__user">
-              <form onSubmit={sendMessage}>
-                <TextField
-                  autoFocus={true}
-                  autoComplete="off"
-                  className={classes.message}
-                  id="outlined-basic" label="Message" variant="outlined"
-                  onChange={onMessageChange}
-                  required={true} />
-                  <Button className={classes.button} type="submit" label="login" variant="contained" color="primary"><SendIcon /></Button>
-                </form>
-                <div className="Room__container__user__info">
-                  <p>User: {name.name}</p>
+              <div className="Room__container__main__center">
+
+                <div className="Room__container__main__center__chat">
+                  {room.messages.map((message, index) => {
+                    return (
+                      <div className={["Room__container__main__center__chat__message bubble",
+                        index + 1,
+                        (name.name === message.name ? "me" : "you")]
+                        .join(' ')}
+                        key={index}>
+                        <p className="Room__container__main__center__chat__message__message">{message.message} </p>
+                        <p className="Room__container__main__center__chat__message__name">{message.name} </p>
+                      </div>
+                    )
+                  })}
+                  {themTyping ?
+                    <Loader
+                      type="ThreeDots"
+                      color={DotTheme}
+                      height={80}
+                      width={80} /> : null}
+                    <div id="scrollRef" ref={messagesEndRef} />
+                  </div>
+                  <div className="Room__container__main__center__user">
+                    <form onSubmit={sendMessage}>
+                      <TextField
+                        autoFocus={true}
+                        autoComplete="off"
+                        className={inputThemes.message}
+                        id="standard-basic" label="Message" variant="standard"
+                        onChange={onMessageChange}
+                        required={true}
+                        onKeyPress={(ev) => {
+                          if (ev.key === 'Enter') {
+                            ev.preventDefault();
+                            sendMessage(ev);
+                          }
+                        }}
+                      />
+                    </form>
+                  </div>
+                </div>
+
+                <div className="Room__container__main__right">
+                  <div className="Room__container__main__right__user">
+                    <p>{name.name}</p>
+                  </div>
+                  <div className="Room__container__main__right__users">
+
+                  </div>
                 </div>
               </div>
             </Paper>

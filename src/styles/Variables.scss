@@ -1,14 +1,17 @@
 // Variables
-$MainTheme: #913030;
-$SecondTheme: #ffffff;
+$MainTheme: #586d8e;
+$ChatBG: #dfe6ed;
+$UserInfo: #7b83af;
+$TextOnWhite: #a7abb1;
+$Name: #67c4c8;
 $Me: #7a2828;
 $You: #a73737;
 
 // Mixins
 @mixin gradient {
-  background: #a73737;
-  background: -webkit-linear-gradient(to right, #7a2828, #a73737) no-repeat center center fixed;
-  background: linear-gradient(to right, #7a2828, #a73737) no-repeat center center fixed;
+  background: #E0EAFC;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #CFDEF3, #E0EAFC) no-repeat center center fixed;
+  background: linear-gradient(to right, #CFDEF3, #E0EAFC) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
