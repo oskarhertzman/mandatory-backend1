@@ -25,6 +25,7 @@ io.on("connection", (socket) => {
   }
 
   let currentRoom;
+  let currentUser;
 
   socket.on('get_rooms', (callback) => {
     server.get_rooms(rooms, callback);
@@ -37,37 +38,45 @@ io.on("connection", (socket) => {
   })
 
   socket.on('join_room', (uuid) => {
+    console.log("joined");
     currentRoom = uuid;
     socket.join(currentRoom);
     server.get_room(uuid, rooms, ROOM_PATH, JoinRoom);
     function JoinRoom (result) {
-        io.to(currentRoom).emit('get_room', result);
-      }
+      io.to(currentRoom).emit('get_room', result);
+    }
+  })
+
+  socket.on('user_joined', (data, uuid) => {
+    currentUser = data.name;
+    socket.broadcast.to(currentRoom).emit('user_joined', data);
+    server.user_joined(data, uuid, ROOM_PATH);
   })
 
   socket.on('typing', (data) => {
     if(data.typing) {
-      console.log(data);
       socket.broadcast.to(currentRoom).emit('typing', data);
-
     }
     else {
-    socket.broadcast.to(currentRoom).emit('typing', data);
+      socket.broadcast.to(currentRoom).emit('typing', data);
     }
   })
 
-
   socket.on('new_message', (data, uuid) => {
-    console.log(data);
     socket.broadcast.to(currentRoom).emit('new_message', data)
     server.new_message(data, uuid, ROOM_PATH);
   })
 
 
+
   socket.on("disconnect", () => {
-    console.log("Client disconnected");
+    server.user_left(currentUser, currentRoom, ROOM_PATH, LeaveRoom)
+    function LeaveRoom (result) {
+    socket.broadcast.to(currentRoom).emit('user_left', result);
     socket.leave(currentRoom);
+    console.log("Client disconnected");
     clearInterval(interval);
+    }
   })
 });
 

@@ -19,7 +19,7 @@ nav(window.location.pathname)
 
 
 export default function Room(props) {
-  const [room, updateRoom] = useState({name: '', messages: []});
+  const [room, updateRoom] = useState({name: '', messages: [], users_online: []});
   const [name, updateName] = useState({name: ''});
   const [message, updateMessage] = useState({message: ''});
   const [referance, setReferance] = useState(false);
@@ -35,10 +35,9 @@ export default function Room(props) {
   const uuid = window.location.pathname.split(':')[1];
 
   useEffect(() => {
+    console.log("yo");
     socket.emit('join_room', uuid);
-
     socket.on('get_room', function (response) {
-      console.log(response);
       if(response.error_404){
         setError(response.error_404);
         if (response.referance) {
@@ -46,42 +45,58 @@ export default function Room(props) {
         }
       }
       else {
+          console.log(response);
         updateRoom(response[0])
       }
     })
     socket.on('new_message', function (data) {
-      console.log(data);
       updateRoom(prevState => ({...prevState, messages: [...prevState.messages, data]}));
       serverRef.current = false;
     })
+    socket.on('user_joined', function (data) {
+      console.log("USER JOINED");
+      console.log(data);
+      updateRoom(prevState => ({...prevState, users_online: [...prevState.users_online, data]}));
+    })
+
+
+
+
+
+      // I WAS HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    socket.on('user_left', function (data) {
+      console.log("USER LEFT");
+      updateRoom(prevArray => [...prevArray, data])
+      console.log(data);
+    })
     socket.on('typing', function (data) {
+      console.log(data);
       setThemTyping(data.typing);
     })
 
-    socket.on('joined', function (data) {
-      console.log(data);
-    })
+
 
     return () => {
       socket.off('get_room');
       socket.off('new_message');
+      socket.off('user_joined');
       socket.off('typing');
-      socket.off('joined');
     }
   }, [uuid])
 
   useEffect(() => {
     if (name.name) {
+      socket.emit('user_joined', {name: name.name}, uuid)
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  });
+  }, [name.name, uuid]);
 
   useEffect (() => {
     if (meTyping) {
-      socket.emit('typing', {typing: meTyping, room: room.name})
+      socket.emit('typing', {typing: meTyping})
     }
     else {
-      socket.emit('typing', {typing: meTyping, room: room.name})
+      socket.emit('typing', {typing: meTyping})
     }
   },[meTyping])
 
@@ -166,7 +181,12 @@ export default function Room(props) {
                     <p>{name.name}</p>
                   </div>
                   <div className="Room__container__main__right__users">
-
+                    <h3>Available</h3>
+                    {room.users_online.map((usersOnline, index) => {
+                      return (
+                        <div key={index}>{usersOnline.name}</div>
+                      )
+                    })}
                   </div>
                 </div>
               </div>

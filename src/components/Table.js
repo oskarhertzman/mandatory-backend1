@@ -62,7 +62,7 @@ export default function Table({rooms, props, socket}) {
                     const data = [...prevState.data];
                     data.push(newData)
                     setTabledata(data);
-                    setRoomData(prevState => ({...prevState, messages: [], uuid: newData.uuid}));
+                    setRoomData(prevState => ({...prevState, messages: [], uuid: newData.uuid, users_online: []}));
                     return { ...prevState, data };
                   });
                 }, 600);

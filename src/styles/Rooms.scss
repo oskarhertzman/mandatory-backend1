@@ -44,7 +44,7 @@
           align-items: center;
           background-color: $ChatHeader;
           color: $Name;
-          
+
           height: 18%;
         }
         &__chat {
@@ -151,10 +151,16 @@
           position: absolute;
           top: 0;
           width: 100%;
-          height: 120px;
+          height:  20%;
           text-align: center;
           text-transform: capitalize;
           color: white;
+        }
+        &__users {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 80%;
         }
       }
     }
