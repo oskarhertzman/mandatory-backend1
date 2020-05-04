@@ -35,7 +35,9 @@ export default function Room(props) {
   const uuid = window.location.pathname.split(':')[1];
 
   useEffect(() => {
-    socket.emit('get_room', uuid, function (response) {
+    socket.emit('join_room', uuid);
+
+    socket.on('get_room', function (response) {
       console.log(response);
       if(response.error_404){
         setError(response.error_404);
@@ -48,15 +50,23 @@ export default function Room(props) {
       }
     })
     socket.on('new_message', function (data) {
+      console.log(data);
       updateRoom(prevState => ({...prevState, messages: [...prevState.messages, data]}));
       serverRef.current = false;
     })
     socket.on('typing', function (data) {
       setThemTyping(data.typing);
     })
+
+    socket.on('joined', function (data) {
+      console.log(data);
+    })
+
     return () => {
+      socket.off('get_room');
       socket.off('new_message');
       socket.off('typing');
+      socket.off('joined');
     }
   }, [uuid])
 
@@ -68,10 +78,10 @@ export default function Room(props) {
 
   useEffect (() => {
     if (meTyping) {
-      socket.emit('typing', {typing: meTyping})
+      socket.emit('typing', {typing: meTyping, room: room.name})
     }
     else {
-      socket.emit('typing', {typing: meTyping})
+      socket.emit('typing', {typing: meTyping, room: room.name})
     }
   },[meTyping])
 
@@ -107,7 +117,9 @@ export default function Room(props) {
 
               </div>
               <div className="Room__container__main__center">
-
+                <div className="Room__container__main__center__header">
+                  <h1>Discuss {room.topic}</h1>
+                </div>
                 <div className="Room__container__main__center__chat">
                   {room.messages.map((message, index) => {
                     return (

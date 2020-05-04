@@ -22,21 +22,23 @@ module.exports = {
     })
   },
 
-  get_room: function GetRoom (uuid, rooms, path, callback) {
+  get_room: function GetRoom (uuid, rooms, path, join) {
     fsp.readFile((path + uuid + ".json")).then(data => {
       const parsed = JSON.parse(data).messages;
       const roomByID = rooms.filter(obj => {
         return obj.uuid === uuid;
       })
       const result = roomByID.map(v => ({...v, messages: parsed}))
-      return callback(result);
+      join(result);
     }).catch(error => {
       const roomByID = rooms.filter(obj => {
         return obj.uuid === uuid;
       })
-      return callback({error_404: "room not found", referance: roomByID});
+      join({error_404: "room not found", referance: roomByID})
     })
   },
+
+
 
   update_room: function UpdateRoom (data, path, ref) {
     if(ref === 'create') {

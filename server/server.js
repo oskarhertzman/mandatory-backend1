@@ -24,6 +24,8 @@ io.on("connection", (socket) => {
     clearInterval(interval);
   }
 
+  let currentRoom;
+
   socket.on('get_rooms', (callback) => {
     server.get_rooms(rooms, callback);
   })
@@ -34,26 +36,37 @@ io.on("connection", (socket) => {
     server.update_room(room, ROOM_PATH, ref);
   })
 
-  socket.on('get_room', (uuid, callback) => {
-    server.get_room(uuid, rooms, ROOM_PATH, callback);
+  socket.on('join_room', (uuid) => {
+    currentRoom = uuid;
+    socket.join(currentRoom);
+    server.get_room(uuid, rooms, ROOM_PATH, JoinRoom);
+    function JoinRoom (result) {
+        io.to(currentRoom).emit('get_room', result);
+      }
   })
 
+  socket.on('typing', (data) => {
+    if(data.typing) {
+      console.log(data);
+      socket.broadcast.to(currentRoom).emit('typing', data);
+
+    }
+    else {
+    socket.broadcast.to(currentRoom).emit('typing', data);
+    }
+  })
+
+
   socket.on('new_message', (data, uuid) => {
-    socket.broadcast.emit('new_message', data)
+    console.log(data);
+    socket.broadcast.to(currentRoom).emit('new_message', data)
     server.new_message(data, uuid, ROOM_PATH);
   })
 
-    socket.on('typing', (data) => {
-      if(data.typing) {
-        socket.broadcast.emit('typing', data)
-      }
-      else {
-        socket.broadcast.emit('typing', data)
-      }
-    })
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
+    socket.leave(currentRoom);
     clearInterval(interval);
   })
 });
