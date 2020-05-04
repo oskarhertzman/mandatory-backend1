@@ -3,12 +3,6 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Load Order
 
 ### `1#`
-#### npx  (npm 5.2+)
-
-```sh
-npx nodemon server.js
-```
-#### npm (npm 5.1 & below )
 ```sh
 node server.js
 ```
