@@ -30,20 +30,17 @@ io.on("connection", (socket) => {
   })
 
   socket.on('update_rooms', (newRooms, room, ref) => {
-    server.update_rooms(newRooms, ROOMS_PATH, send);
+    console.log(room);
+    server.update_rooms(newRooms, ROOMS_PATH);
     server.update_room(room, ROOM_PATH, ref);
-
-    function send (data) {
-      socket.broadcast.emit('new_room', data);
-    }
+    socket.broadcast.emit('new_room', newRooms);
   })
 
   socket.on('join_room', (uuid) => {
     currentRoom = uuid;
     socket.join(currentRoom);
-    server.get_room(uuid, ROOMS_PATH, ROOM_PATH, JoinRoom);
+    server.get_room(uuid, ROOM_PATH, JoinRoom);
     function JoinRoom (result) {
-      console.log(result);
       io.to(currentRoom).emit('get_room', result);
     }
   })

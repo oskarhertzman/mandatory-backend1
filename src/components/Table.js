@@ -22,9 +22,7 @@ export default function Table({rooms, props, socket}) {
     data: tableData,
   });
 
-
   useEffect(() => {
-    console.log(tableData);
     socket.on('new_room', function (data) {
       setColumns(prevState => ({ ...prevState, data: data}));
     })
@@ -35,11 +33,13 @@ export default function Table({rooms, props, socket}) {
 
   useEffect(() => {
     if (socketRef.current) {
-      console.log(tableData);
       socket.emit('update_rooms', tableData, roomData, socketRef.current)
       socketRef.current = false;
     }
   }, [tableData, roomData, socket])
+
+
+
 
   return (
     <div>
@@ -58,14 +58,13 @@ export default function Table({rooms, props, socket}) {
                 setTimeout(() => {
                   resolve();
                   setColumns((prevState) => {
-                    console.log(newData);
                     if(newData.type === "Public") {
                       socketRef.current = "create";
                       newData.uuid = uuidv4();
                       const data = [...prevState.data];
                       data.push(newData)
                       setTabledata(data);
-                      setRoomData(prevState => ({...prevState, messages: [], uuid: newData.uuid, users_online: []}));
+                      setRoomData(prevState => ({...prevState, name: newData.name, topic: newData.topic, type: newData.type, messages: [], uuid: newData.uuid, users_online: []}));
                       return { ...prevState, data };
                     }
                     else if (newData.type === "Private") {

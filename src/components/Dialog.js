@@ -12,18 +12,13 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 const ENDPOINT = "http://127.0.0.1:8090";
 const socket = io(ENDPOINT);
 
-export default function FormDialog({name, room, updateName, error, server_ref}) {
+export default function FormDialog({name, room, updateName, error}) {
   const [open, setOpen] = useState(true);
   const [back, toBack] = useState(false);
   const [inputError, setInputError] = useState(error);
-  const [errorRef, setErrorRef] = useState({name: "", type: "", topic: ""})
   const [nameRef, setNameRef] = useState(name);
 
-  useEffect(() => {
-    if(server_ref){
-      setErrorRef(server_ref)
-    }
-  }, [server_ref])
+
 
 
   function handleBack () {
@@ -64,13 +59,6 @@ export default function FormDialog({name, room, updateName, error, server_ref}) 
                 <DialogContentText>
                   {error ? 'The room was not found on the server, click the button to go back'
                   : `To use ${room.name}, please enter your username here.`}
-                  {error && errorRef.name.length > 0 ? <div> Please delete this room from the main menu, since its now useless:
-                    <ul style={{fontWeight: 'bold'}}>
-                      <li>Room: {errorRef.name}</li>
-                      <li>Type: {errorRef.type}</li>
-                      <li>Topic: {errorRef.topic}</li>
-                    </ul>
-                  </div> : null}
                 </DialogContentText>
                 {error ? null :
                   <TextField

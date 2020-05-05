@@ -22,7 +22,6 @@ export default function Room(props) {
   const [room, updateRoom] = useState({name: '', messages: [], users_online: []});
   const [name, updateName] = useState({name: ''});
   const [message, updateMessage] = useState({message: ''});
-  const [referance, setReferance] = useState(false);
   const [meTyping, setMeTyping] = useState(false);
   const [themTyping, setThemTyping] = useState(false);
   const [error, setError] = useState(false);
@@ -38,13 +37,11 @@ export default function Room(props) {
     socket.emit('join_room', uuid);
     socket.on('get_room', function (response) {
       if(response.error_404){
+        console.log("error");
         setError(response.error_404);
-        if (response.referance) {
-          setReferance(response.referance[0]);
-        }
       }
       else {
-        updateRoom(response[0])
+        updateRoom(response)
       }
     })
     socket.on('new_message', function (data) {
@@ -165,7 +162,6 @@ console.log(room);
                     </form>
                   </div>
                 </div>
-
                 <div className="Room__container__main__right">
                   <div className="Room__container__main__right__user">
                     <p>{name.name}</p>
@@ -189,7 +185,6 @@ console.log(room);
             room={room}
             updateName={updateName}
             error={error}
-            server_ref={referance}
           /> : null
         }
       </div>
