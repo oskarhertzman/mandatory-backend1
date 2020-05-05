@@ -35,7 +35,6 @@ export default function Room(props) {
   const uuid = window.location.pathname.split(':')[1];
 
   useEffect(() => {
-    console.log("yo");
     socket.emit('join_room', uuid);
     socket.on('get_room', function (response) {
       if(response.error_404){
@@ -45,7 +44,6 @@ export default function Room(props) {
         }
       }
       else {
-          console.log(response);
         updateRoom(response[0])
       }
     })
@@ -55,37 +53,29 @@ export default function Room(props) {
     })
     socket.on('user_joined', function (data) {
       console.log("USER JOINED");
-      console.log(data);
       updateRoom(prevState => ({...prevState, users_online: [...prevState.users_online, data]}));
     })
-
-
-
-
-
-      // I WAS HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     socket.on('user_left', function (data) {
       console.log("USER LEFT");
-      updateRoom(prevArray => [...prevArray, data])
-      console.log(data);
+      updateRoom(prevState => ({...prevState, users_online: data}));
     })
     socket.on('typing', function (data) {
       console.log(data);
       setThemTyping(data.typing);
     })
 
-
-
     return () => {
       socket.off('get_room');
       socket.off('new_message');
       socket.off('user_joined');
+      socket.off('user_left');
       socket.off('typing');
     }
   }, [uuid])
 
   useEffect(() => {
     if (name.name) {
+      updateRoom(prevState => ({...prevState, users_online: [...prevState.users_online, {name: name.name}]}));
       socket.emit('user_joined', {name: name.name}, uuid)
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
@@ -118,7 +108,7 @@ export default function Room(props) {
     setMeTyping(true)
     debounceLoadData();
   }
-
+console.log(room);
   return (
     <div className="Room">
       {error || !name.name ? null :

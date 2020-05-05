@@ -15,15 +15,16 @@ export default function Table({rooms, props, socket}) {
   const [columns, setColumns] = useState({
     columns: [
       { title: 'Name', field: 'name' },
-      { title: 'Type', field: 'type' },
+      { title: 'Type', field: 'type', lookup: { Public: 'Public', Private: 'Private'}},
       { title: 'Topic', field: 'topic' },
-      { title: '', field: 'password', render: rowData => <ArrowForwardIcon className={classes.root} onClick={() => updateCurrRoom(rowData)}></ArrowForwardIcon>},
+      { render: rowData => <ArrowForwardIcon className={classes.root} onClick={() => updateCurrRoom(rowData)}></ArrowForwardIcon>},
     ],
     data: tableData,
   });
 
 
   useEffect(() => {
+    console.log(tableData);
     socket.on('new_room', function (data) {
       setColumns(prevState => ({ ...prevState, data: data}));
     })
@@ -57,13 +58,29 @@ export default function Table({rooms, props, socket}) {
                 setTimeout(() => {
                   resolve();
                   setColumns((prevState) => {
-                    socketRef.current = "create";
-                    newData.uuid = uuidv4();
-                    const data = [...prevState.data];
-                    data.push(newData)
-                    setTabledata(data);
-                    setRoomData(prevState => ({...prevState, messages: [], uuid: newData.uuid, users_online: []}));
-                    return { ...prevState, data };
+                    console.log(newData);
+                    if(newData.type === "Public") {
+                      socketRef.current = "create";
+                      newData.uuid = uuidv4();
+                      const data = [...prevState.data];
+                      data.push(newData)
+                      setTabledata(data);
+                      setRoomData(prevState => ({...prevState, messages: [], uuid: newData.uuid, users_online: []}));
+                      return { ...prevState, data };
+                    }
+                    else if (newData.type === "Private") {
+                      socketRef.current = "create";
+                      newData.uuid = uuidv4();
+                      const data = [...prevState.data];
+                      data.push(newData)
+                      setTabledata(data);
+                      setRoomData(prevState => ({...prevState, messages: [], uuid: newData.uuid, users_online: []}));
+                      return { ...prevState, data };
+                    }
+                    else {
+                      alert('The Room type must be either "Public" or "Private"')
+                      return { ...prevState}
+                    }
                   });
                 }, 600);
               }),
