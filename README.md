@@ -23,8 +23,10 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ## Features
   * Public & private rooms
-  * Add, update & remove chat rooms (live)
+  * Real-time adding, updating & removing rooms
   * Real-time messages
+  * Currently online users in room
+  * Feedback on "user typing"
   * Error handling on missing data
   
 ## Tools 
