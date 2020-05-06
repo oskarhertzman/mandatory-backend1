@@ -5,13 +5,15 @@ const fsp = require('fs').promises;
 module.exports = {
 
   get_rooms: function GetRooms (callback, path) {
-    fsp.readFile((path)).then(data => {
+    fsp.readFile(path).then(data => {
       callback(JSON.parse(data))
+    }).catch(error => {
+      console.log(error);
     })
   },
 
   get_room: function GetRoom (uuid, path, join) {
-    fsp.readFile((path + uuid + ".json")).then(data => {
+    fsp.readFile(path + uuid + ".json").then(data => {
       join(JSON.parse(data))
     }).catch(error => {
       join({error_404: "room not found"})
@@ -26,49 +28,67 @@ module.exports = {
 
   update_room: function UpdateRoom (data, path, ref) {
     if(ref === 'create') {
-        fsp.writeFile(path + data.uuid + ".json", JSON.stringify(data)).catch(error => {
-          console.log(error);
-        })
+      fsp.writeFile(path + data.uuid + ".json", JSON.stringify(data)).catch(error => {
+        console.log(error);
+      })
     }
     if(ref === 'delete') {
-        fsp.unlink(path + data.uuid + ".json").catch(error => {
-          console.log(error);
-        })
+      fsp.unlink(path + data.uuid + ".json").catch(error => {
+        console.log(error);
+      })
     }
   },
 
   new_message: function NewMessage (message, uuid, path) {
-    fsp.readFile((path + uuid + ".json")).then(data => {
+    fsp.readFile(path + uuid + ".json").then(data => {
       const room = JSON.parse(data);
       room.messages.push(message);
-        fsp.writeFile(path + uuid + ".json", JSON.stringify(room)).catch(error => {
-          console.log(error);
-        })
+      fsp.writeFile(path + uuid + ".json", JSON.stringify(room)).catch(error => {
+        console.log(error);
+      })
+    })
+  },
+
+  delete_message: function DeleteMessage (message, uuid, path, deleted) {
+    fsp.readFile(path + uuid + ".json").then(data => {
+      const room = JSON.parse(data);
+      for (let [index,usr] of room.messages.entries()) {
+        if (usr.name === message.name && usr.message === message.message) {
+          room.messages.splice(index, 1);
+          break;
+        }
+      }
+      deleted(room.messages);
+      fsp.writeFile(path + uuid + ".json", JSON.stringify(room)).catch(error => {
+        console.log(error);
+      })
     })
   },
 
   user_joined: function UserJoined (user, uuid, path) {
-    fsp.readFile((path + uuid + ".json")).then(data => {
+    fsp.readFile(path + uuid + ".json").then(data => {
       const room = JSON.parse(data);
       room.users_online.push(user);
-        fsp.writeFile(path + uuid + ".json", JSON.stringify(room)).catch(error => {
-          console.log(error);
-        })
+      fsp.writeFile(path + uuid + ".json", JSON.stringify(room)).catch(error => {
+        console.log(error);
+      })
     })
   },
 
   user_left: function UserLeft (user, uuid, path, leave) {
     if (user) {
-      fsp.readFile((path + uuid + ".json")).then(data => {
+      fsp.readFile(path + uuid + ".json").then(data => {
         const room = JSON.parse(data);
-        var newUsers = room.users_online.filter(function(el) {
-          return el.name !== user;
-        })
-        room.users_online = newUsers;
+        for (let [index,usr] of room.users_online.entries()) {
+          if (usr.name === user) {
+            room.users_online.splice(index, 1);
+            break;
+          }
+        }
         leave(room.users_online);
-          fsp.writeFile(path + uuid + ".json", JSON.stringify(room)).catch(error => {
-            console.log(error);
-          })
+        fsp.writeFile(path + uuid + ".json", JSON.stringify(room)).catch(error => {
+          console.log(error);
+        })
       })
     }
   }

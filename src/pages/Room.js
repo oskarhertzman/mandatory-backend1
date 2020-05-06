@@ -1,18 +1,21 @@
-import React, {useState, useEffect, useRef, useCallback } from 'react';
+import React, {useState, useEffect, useRef, useCallback, createRef } from 'react';
 import Loader from 'react-loader-spinner'
+import Moment from 'react-moment';
 import debounce from "lodash/debounce";
 import io from 'socket.io-client';
 import { Paper } from '@material-ui/core';
 import { TextField } from '@material-ui/core';
-
+import DeleteIcon from '@material-ui/icons/Delete';
 
 
 import FormDialog from '../components/Dialog.js';
 import { paperTheme } from '../themes/Theme.js';
 import { inputTheme, DotTheme } from '../themes/Theme.js';
 import nav from '../utilities/nav';
+import time from '../utilities/time';
 import '../styles/Rooms.scss';
 
+var moment = require('moment-timezone');
 const ENDPOINT = "http://127.0.0.1:8090";
 const socket = io(ENDPOINT);
 nav(window.location.pathname)
@@ -24,16 +27,27 @@ export default function Room(props) {
   const [message, updateMessage] = useState({message: ''});
   const [meTyping, setMeTyping] = useState(false);
   const [themTyping, setThemTyping] = useState(false);
+  const [timeMsg, setTimeMsg] = useState();
   const [error, setError] = useState(false);
   const messagesEndRef = useRef(null)
   const serverRef = useRef(false);
   const debounceLoadData = useCallback(debounce(() => {
     setMeTyping(false);
   }, 3000), []);
-  const inputThemes = inputTheme();
+
+  const inputThemes = inputTheme
   const uuid = window.location.pathname.split(':')[1];
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const currentTime = moment().tz(timezone).format();
+  const hr = (new Date()).getHours();
+
+  const [nameRefs, setNameRefs] = useState([]);
+  const [msgRefs, setMsgRefs] = useState([]);
 
   useEffect(() => {
+    time(hr, function (data) {
+      setTimeMsg(data);
+    })
     socket.emit('join_room', uuid);
     socket.on('get_room', function (response) {
       if(response.error_404){
@@ -42,11 +56,21 @@ export default function Room(props) {
       }
       else {
         updateRoom(response)
+
+        setNameRefs(nameRefs => (
+          Array(response.messages.length).fill().map((_, i) => nameRefs[i] || createRef())
+        ));
+        setMsgRefs(msgRefs => (
+          Array(response.messages.length).fill().map((_, i) => msgRefs[i] || createRef())
+        ));
       }
     })
     socket.on('new_message', function (data) {
       updateRoom(prevState => ({...prevState, messages: [...prevState.messages, data]}));
       serverRef.current = false;
+    })
+    socket.on('delete_message', function (data) {
+      updateRoom(prevState => ({...prevState, messages: data}))
     })
     socket.on('user_joined', function (data) {
       console.log("USER JOINED");
@@ -87,6 +111,14 @@ export default function Room(props) {
     }
   },[meTyping])
 
+  useEffect(() => {
+    setNameRefs(nameRefs => (
+      Array(room.messages.length).fill().map((_, i) => nameRefs[i] || createRef())
+    ));
+    setMsgRefs(msgRefs => (
+      Array(room.messages.length).fill().map((_, i) => msgRefs[i] || createRef())
+    ));
+  },[room])
 
   function sendMessage(e) {
     e.preventDefault();
@@ -105,7 +137,23 @@ export default function Room(props) {
     setMeTyping(true)
     debounceLoadData();
   }
-console.log(room);
+
+  function deleteMessage(name, message) {
+    socket.emit('delete_message', {
+      name: name.current.textContent,
+      message: message.current.textContent,
+    }, uuid)
+    let newRoom = room.messages;
+    for (let [index,usr] of room.messages.entries()) {
+      if (usr.name === name.current.textContent && usr.message === message.current.textContent) {
+        newRoom.splice(index, 1);
+        break;
+      }
+    }
+    updateRoom(prevState => ({...prevState, messages: newRoom}))
+    console.log(room);
+  }
+
   return (
     <div className="Room">
       {error || !name.name ? null :
@@ -116,77 +164,86 @@ console.log(room);
             <div className="Room__container__main">
               <div className="Room__container__main__left">
                 <h1 className="title">{room.name}</h1>
-
+                <Moment format="YYYY/MM/DD">
+                {currentTime}
+              </Moment>
+            </div>
+            <div className="Room__container__main__center">
+              <div className="Room__container__main__center__header">
+                <h1>Discuss {room.topic}</h1>
               </div>
-              <div className="Room__container__main__center">
-                <div className="Room__container__main__center__header">
-                  <h1>Discuss {room.topic}</h1>
-                </div>
-                <div className="Room__container__main__center__chat">
-                  {room.messages.map((message, index) => {
-                    return (
-                      <div className={["Room__container__main__center__chat__message bubble",
-                        index + 1,
-                        (name.name === message.name ? "me" : "you")]
-                        .join(' ')}
-                        key={index}>
-                        <p className="Room__container__main__center__chat__message__message">{message.message} </p>
-                        <p className="Room__container__main__center__chat__message__name">{message.name} </p>
+              <div className="Room__container__main__center__chat">
+                {room.messages.map((message, index) => {
+                  return (
+                    <div className={["Room__container__main__center__chat__message bubble",
+                      index + 1,
+                      (name.name === message.name ? "me" : "you")]
+                      .join(' ')}
+                      key={index}
+                      id={index}
+                      >
+                        <p ref={msgRefs[index]} className="Room__container__main__center__chat__message__message">{message.message}</p>
+                        <p ref={nameRefs[index]} className="Room__container__main__center__chat__message__name">{message.name}</p>
+                        {name.name === message.name ? <div className="delMessage" onClick={ () => deleteMessage(nameRefs[index], msgRefs[index])}><DeleteIcon /></div> : null}
                       </div>
                     )
                   })}
                   {themTyping ?
                     <Loader
+                      className="typingLoader"
                       type="ThreeDots"
                       color={DotTheme}
                       height={80}
                       width={80} /> : null}
-                    <div id="scrollRef" ref={messagesEndRef} />
+                      <div id="scrollRef" ref={messagesEndRef} />
+                    </div>
+                    <div className="Room__container__main__center__user">
+                      <form onSubmit={sendMessage}>
+                        <TextField
+                          autoFocus={true}
+                          autoComplete="off"
+                          className={inputThemes.message}
+                          id="standard-basic" label="Message" variant="standard"
+                          onChange={onMessageChange}
+                          required={true}
+                          onKeyPress={(ev) => {
+                            if (ev.key === 'Enter') {
+                              ev.preventDefault();
+                              sendMessage(ev);
+                            }
+                          }}
+                        />
+                      </form>
+                    </div>
                   </div>
-                  <div className="Room__container__main__center__user">
-                    <form onSubmit={sendMessage}>
-                      <TextField
-                        autoFocus={true}
-                        autoComplete="off"
-                        className={inputThemes.message}
-                        id="standard-basic" label="Message" variant="standard"
-                        onChange={onMessageChange}
-                        required={true}
-                        onKeyPress={(ev) => {
-                          if (ev.key === 'Enter') {
-                            ev.preventDefault();
-                            sendMessage(ev);
-                          }
-                        }}
-                      />
-                    </form>
+                  <div className="Room__container__main__right">
+                    <div className="Room__container__main__right__user">
+                      <h3>{timeMsg}, {name.name}</h3>
+                    </div>
+                    <div className="Room__container__main__right__users">
+                      <h3>Online now</h3>
+                      {room.users_online.map((usersOnline, index) => {
+                        return (
+                          <div key={index} className="Room__container__main__right__users__online">
+                            <p>{usersOnline.name}</p>
+                            <div className="circle"></div>
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
                 </div>
-                <div className="Room__container__main__right">
-                  <div className="Room__container__main__right__user">
-                    <p>{name.name}</p>
-                  </div>
-                  <div className="Room__container__main__right__users">
-                    <h3>Available</h3>
-                    {room.users_online.map((usersOnline, index) => {
-                      return (
-                        <div key={index}>{usersOnline.name}</div>
-                      )
-                    })}
-                  </div>
-                </div>
-              </div>
-            </Paper>
-          </div>
-        }
-        {room.name || error ?
-          <FormDialog
-            name={name}
-            room={room}
-            updateName={updateName}
-            error={error}
-          /> : null
-        }
-      </div>
-    );
-  }
+              </Paper>
+            </div>
+          }
+          {room.name || error ?
+            <FormDialog
+              name={name}
+              room={room}
+              updateName={updateName}
+              error={error}
+            /> : null
+          }
+        </div>
+      );
+    }

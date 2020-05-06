@@ -44,7 +44,6 @@
           align-items: center;
           background-color: $ChatHeader;
           color: $Name;
-
           height: 18%;
         }
         &__chat {
@@ -56,7 +55,6 @@
 
 
           .bubble {
-
             min-width: 200px;
             max-width: 550px;
             margin: 22px;
@@ -120,6 +118,19 @@
               color: $Name;
             }
 
+            .delMessage {
+              position: absolute;
+              right: 0;
+              bottom: 0;
+
+              &:hover {
+                cursor: pointer;
+              }
+            }
+
+          }
+          .typingLoader {
+            margin-left: 100px;
           }
         }
 
@@ -147,11 +158,14 @@
         box-shadow: 0px 0px 23px 2px rgba(209,209,209,1);
 
         &__user {
+          display: flex;
+          justify-content: center;
+          align-items: center;
           background-color: $UserInfo;
           position: absolute;
           top: 0;
           width: 100%;
-          height:  20%;
+          height:  18%;
           text-align: center;
           text-transform: capitalize;
           color: white;
@@ -160,7 +174,32 @@
           position: absolute;
           bottom: 0;
           width: 100%;
-          height: 80%;
+          height: 82%;
+
+            h3 {
+              margin: 30px 0px 40px 30px;
+            }
+          &__online {
+            display: flex;
+            position: relative;
+            margin: 0px 0px 30px 40px;
+            .circle {
+              width: 10px;
+              height: 10px;
+              border-radius: 10px;
+              background-color: $Name;
+              position: absolute;
+              right: 0;
+              margin-right: 50px;
+            }
+
+            p {
+              line-height: 0.5;
+              margin: 0;
+              padding: 0;
+              padding-left: 30px;
+            }
+          }
         }
       }
     }

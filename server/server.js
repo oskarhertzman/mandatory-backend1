@@ -65,6 +65,13 @@ io.on("connection", (socket) => {
     server.new_message(data, uuid, ROOM_PATH);
   })
 
+  socket.on('delete_message', (data, uuid) => {
+    server.delete_message(data, uuid, ROOM_PATH, deleted);
+    function deleted (result) {
+      socket.broadcast.to(currentRoom).emit('delete_message', result);
+    }
+  })
+
   socket.on("disconnect", () => {
     server.user_left(currentUser, currentRoom, ROOM_PATH, LeaveRoom)
     function LeaveRoom (result) {
