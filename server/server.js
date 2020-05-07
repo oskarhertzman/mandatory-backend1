@@ -29,10 +29,10 @@ io.on("connection", (socket) => {
     server.get_rooms(callback, ROOMS_PATH);
   })
 
-  socket.on('update_rooms', (newRooms, room, ref) => {
+  socket.on('update_rooms', (newRooms, room, ref, typeRef) => {
     console.log(room);
     server.update_rooms(newRooms, ROOMS_PATH);
-    server.update_room(room, ROOM_PATH, ref);
+    server.update_room(room, ROOM_PATH, ref, typeRef);
     socket.broadcast.emit('new_room', newRooms);
   })
 
@@ -42,6 +42,13 @@ io.on("connection", (socket) => {
     server.get_room(uuid, ROOM_PATH, JoinRoom);
     function JoinRoom (result) {
       io.to(currentRoom).emit('get_room', result);
+    }
+  })
+
+  socket.on('user_auth', (pass, uuid) => {
+    server.user_auth(ROOM_PATH, pass, uuid, response);
+    function response (data) {
+      socket.emit('user_auth', data);
     }
   })
 

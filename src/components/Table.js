@@ -4,18 +4,22 @@ import { v4 as uuidv4 } from 'uuid';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import MaterialTable from 'material-table';
 
+import NewPass from '../components/NewPass.js';
 import { enterTheme } from '../themes/Theme.js';
 
-export default function Table({rooms, props, socket}) {
+export default function Table({rooms, socket, props}) {
   const socketRef = useRef(false);
+  const typeRef = useRef(false);
   const classes = enterTheme(props);
   const [tableData, setTabledata] = useState(rooms);
   const [roomData, setRoomData] = useState();
   const [currRoom, updateCurrRoom] = useState(false);
+  const [newPass, setNewPass] = useState(false);
+
   const [columns, setColumns] = useState({
     columns: [
       { title: 'Name', field: 'name' },
-      { title: 'Type', field: 'type', lookup: { Public: 'Public', Private: 'Private'}},
+      { title: 'Type', field: 'type', lookup: { Public: 'Public', Private: 'Private'}, editable: 'onAdd'},
       { title: 'Topic', field: 'topic' },
       { render: rowData => <ArrowForwardIcon className={classes.root} onClick={() => updateCurrRoom(rowData)}></ArrowForwardIcon>},
     ],
@@ -33,12 +37,19 @@ export default function Table({rooms, props, socket}) {
 
   useEffect(() => {
     if (socketRef.current) {
-      socket.emit('update_rooms', tableData, roomData, socketRef.current)
-      socketRef.current = false;
+      if (typeRef.current === 'public'
+      || socketRef.current === 'update'
+      || socketRef.current === 'delete') {
+        console.log(roomData);
+        socket.emit('update_rooms', tableData, roomData, socketRef.current, typeRef.current)
+        socketRef.current = false;
+      }
+      else if (typeRef.current === 'private') {
+        console.log("Private.");
+        setNewPass(true);
+      }
     }
   }, [tableData, roomData, socket])
-
-
 
 
   return (
@@ -60,6 +71,7 @@ export default function Table({rooms, props, socket}) {
                   setColumns((prevState) => {
                     if(newData.type === "Public") {
                       socketRef.current = "create";
+                      typeRef.current = "public";
                       newData.uuid = uuidv4();
                       const data = [...prevState.data];
                       data.push(newData)
@@ -69,11 +81,12 @@ export default function Table({rooms, props, socket}) {
                     }
                     else if (newData.type === "Private") {
                       socketRef.current = "create";
+                      typeRef.current = 'private';
                       newData.uuid = uuidv4();
                       const data = [...prevState.data];
                       data.push(newData)
                       setTabledata(data);
-                      setRoomData(prevState => ({...prevState, messages: [], uuid: newData.uuid, users_online: []}));
+                      setRoomData(prevState => ({...prevState, name: newData.name, topic: newData.topic, type: newData.type, messages: [], uuid: newData.uuid, users_online: []}));
                       return { ...prevState, data };
                     }
                     else {
@@ -89,10 +102,12 @@ export default function Table({rooms, props, socket}) {
                   resolve();
                   if (oldData) {
                     setColumns((prevState) => {
+                      console.log('update');
                       socketRef.current = "update";
                       const data = [...prevState.data];
                       data[data.indexOf(oldData)] = newData;
                       setTabledata(data);
+                      setRoomData(prevState => ({...prevState, name: newData.name, topic: newData.topic, type: newData.type, messages: [], uuid: newData.uuid, users_online: []}));
                       return { ...prevState, data };
                     });
                   }
@@ -114,6 +129,11 @@ export default function Table({rooms, props, socket}) {
               }),
             }}
           />
-        </div>
-      );
-    }
+          {newPass ?
+            <NewPass
+              table={tableData}
+              room={roomData}
+            /> : null}
+          </div>
+        );
+      }

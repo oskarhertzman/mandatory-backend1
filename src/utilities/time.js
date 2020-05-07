@@ -17,6 +17,6 @@ export default function time (time, callback) {
   }
 
   else {
-    callback("Good night");
+    callback("Good evening");
   }
 }

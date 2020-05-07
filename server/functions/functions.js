@@ -1,4 +1,5 @@
 const fsp = require('fs').promises;
+const crypto = require('crypto');
 
 // Promises are bae
 
@@ -26,12 +27,36 @@ module.exports = {
     })
   },
 
-  update_room: function UpdateRoom (data, path, ref) {
+  update_room: function UpdateRoom (data, path, ref, typeRef) {
     if(ref === 'create') {
-      fsp.writeFile(path + data.uuid + ".json", JSON.stringify(data)).catch(error => {
-        console.log(error);
-      })
+
+      if(typeRef === 'public'){
+        fsp.writeFile(path + data.uuid + ".json", JSON.stringify(data)).catch(error => {
+          console.log(error);
+        })
+      }
+      if(typeRef === 'private') {
+        const hash = crypto.createHash('sha256');
+        hash.update(data.pass);
+        let hashedPw = hash.digest('hex');
+        data.pass = hashedPw;
+        fsp.writeFile(path + data.uuid + ".json", JSON.stringify(data)).catch(error => {
+          console.log(error);
+        })
+      }
     }
+
+    if (ref === 'update') {
+        fsp.readFile(path + data.uuid + ".json").then(roomData => {
+          const room = JSON.parse(roomData);
+          room.name = data.name;
+          room.topic = data.topic;
+          fsp.writeFile(path + data.uuid + ".json", JSON.stringify(room)).catch(error => {
+            console.log(error);
+          })
+        })
+    }
+
     if(ref === 'delete') {
       fsp.unlink(path + data.uuid + ".json").catch(error => {
         console.log(error);
@@ -62,6 +87,24 @@ module.exports = {
       fsp.writeFile(path + uuid + ".json", JSON.stringify(room)).catch(error => {
         console.log(error);
       })
+    })
+  },
+
+  user_auth: function UserAuth (path, pass, uuid, response) {
+    let userPass = pass;
+    const hash = crypto.createHash('sha256');
+    hash.update(userPass.pass);
+    let hashedPw = hash.digest('hex');
+    console.log(hashedPw);
+    fsp.readFile(path + uuid + ".json").then(data => {
+      let roomPass = JSON.parse(data).pass;
+      console.log(roomPass);
+      if (hashedPw === roomPass) {
+        response({login: true})
+      }
+      else {
+        response({login: false})
+      }
     })
   },
 

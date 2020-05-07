@@ -7,7 +7,6 @@ import { Paper } from '@material-ui/core';
 import { TextField } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-
 import FormDialog from '../components/Dialog.js';
 import { paperTheme } from '../themes/Theme.js';
 import { inputTheme, DotTheme } from '../themes/Theme.js';
@@ -15,7 +14,6 @@ import nav from '../utilities/nav';
 import time from '../utilities/time';
 import '../styles/Rooms.scss';
 
-var moment = require('moment-timezone');
 const ENDPOINT = "http://127.0.0.1:8090";
 const socket = io(ENDPOINT);
 nav(window.location.pathname)
@@ -35,10 +33,8 @@ export default function Room(props) {
     setMeTyping(false);
   }, 3000), []);
 
-  const inputThemes = inputTheme
+  const inputThemes = inputTheme();
   const uuid = window.location.pathname.split(':')[1];
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const currentTime = moment().tz(timezone).format();
   const hr = (new Date()).getHours();
 
   const [nameRefs, setNameRefs] = useState([]);
@@ -51,7 +47,6 @@ export default function Room(props) {
     socket.emit('join_room', uuid);
     socket.on('get_room', function (response) {
       if(response.error_404){
-        console.log("error");
         setError(response.error_404);
       }
       else {
@@ -81,18 +76,18 @@ export default function Room(props) {
       updateRoom(prevState => ({...prevState, users_online: data}));
     })
     socket.on('typing', function (data) {
-      console.log(data);
       setThemTyping(data.typing);
     })
 
     return () => {
       socket.off('get_room');
       socket.off('new_message');
+      socket.off('delete_message');
       socket.off('user_joined');
       socket.off('user_left');
       socket.off('typing');
     }
-  }, [uuid])
+  }, [uuid, hr])
 
   useEffect(() => {
     if (name.name) {
@@ -125,14 +120,12 @@ export default function Room(props) {
     setMeTyping(false);
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     const merged = {...name, ...message}
-    console.log(merged);
     socket.emit('new_message', merged, uuid)
     updateRoom(prevState => ({...prevState, messages: [...prevState.messages, merged]}));
   }
 
   function onMessageChange (e) {
     let target = e.target.value
-    console.log(target);
     updateMessage(prevState => ({...prevState, message: target}));
     setMeTyping(true)
     debounceLoadData();
@@ -151,7 +144,6 @@ export default function Room(props) {
       }
     }
     updateRoom(prevState => ({...prevState, messages: newRoom}))
-    console.log(room);
   }
 
   return (
@@ -164,9 +156,6 @@ export default function Room(props) {
             <div className="Room__container__main">
               <div className="Room__container__main__left">
                 <h1 className="title">{room.name}</h1>
-                <Moment format="YYYY/MM/DD">
-                {currentTime}
-              </Moment>
             </div>
             <div className="Room__container__main__center">
               <div className="Room__container__main__center__header">
