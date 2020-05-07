@@ -30,7 +30,6 @@ io.on("connection", (socket) => {
   })
 
   socket.on('update_rooms', (newRooms, room, ref, typeRef) => {
-    console.log(room);
     server.update_rooms(newRooms, ROOMS_PATH);
     server.update_room(room, ROOM_PATH, ref, typeRef);
     socket.broadcast.emit('new_room', newRooms);

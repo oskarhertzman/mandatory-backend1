@@ -1,6 +1,5 @@
 
 export default function time (time, callback) {
-  console.log(time);
   if (time >= 5 && time <= 9) {
     callback("Good morning");
   }

@@ -45,18 +45,16 @@ module.exports = {
         })
       }
     }
-
     if (ref === 'update') {
-        fsp.readFile(path + data.uuid + ".json").then(roomData => {
-          const room = JSON.parse(roomData);
-          room.name = data.name;
-          room.topic = data.topic;
-          fsp.writeFile(path + data.uuid + ".json", JSON.stringify(room)).catch(error => {
-            console.log(error);
-          })
+      fsp.readFile(path + data.uuid + ".json").then(roomData => {
+        const room = JSON.parse(roomData);
+        room.name = data.name;
+        room.topic = data.topic;
+        fsp.writeFile(path + data.uuid + ".json", JSON.stringify(room)).catch(error => {
+          console.log(error);
         })
-    }
-
+      })
+    }  
     if(ref === 'delete') {
       fsp.unlink(path + data.uuid + ".json").catch(error => {
         console.log(error);
@@ -95,10 +93,8 @@ module.exports = {
     const hash = crypto.createHash('sha256');
     hash.update(userPass.pass);
     let hashedPw = hash.digest('hex');
-    console.log(hashedPw);
     fsp.readFile(path + uuid + ".json").then(data => {
       let roomPass = JSON.parse(data).pass;
-      console.log(roomPass);
       if (hashedPw === roomPass) {
         response({login: true})
       }

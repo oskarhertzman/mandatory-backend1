@@ -40,12 +40,10 @@ export default function Table({rooms, socket, props}) {
       if (typeRef.current === 'public'
       || socketRef.current === 'update'
       || socketRef.current === 'delete') {
-        console.log(roomData);
         socket.emit('update_rooms', tableData, roomData, socketRef.current, typeRef.current)
         socketRef.current = false;
       }
       else if (typeRef.current === 'private') {
-        console.log("Private.");
         setNewPass(true);
       }
     }
@@ -102,7 +100,6 @@ export default function Table({rooms, socket, props}) {
                   resolve();
                   if (oldData) {
                     setColumns((prevState) => {
-                      console.log('update');
                       socketRef.current = "update";
                       const data = [...prevState.data];
                       data[data.indexOf(oldData)] = newData;

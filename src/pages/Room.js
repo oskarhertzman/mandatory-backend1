@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useRef, useCallback, createRef } from 'react';
 import Loader from 'react-loader-spinner'
-import Moment from 'react-moment';
 import debounce from "lodash/debounce";
 import io from 'socket.io-client';
 import { Paper } from '@material-ui/core';
