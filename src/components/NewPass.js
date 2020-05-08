@@ -83,7 +83,6 @@ export default function NewPass({table, room}) {
               required={true}
               error={error}
               onChange={handleConfirmChange}
-              autoFocus
               margin="dense"
               id="conf_pwd"
               label="Confirm Password"

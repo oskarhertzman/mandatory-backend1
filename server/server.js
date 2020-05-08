@@ -12,6 +12,7 @@ const port = process.env.PORT || 8090;
 
 const ROOMS_PATH = './db/rooms/rooms.json';
 const ROOM_PATH = './db/room/';
+const AUTH_PATH = './db/auth/';
 
 let interval;
 app.use(index);
@@ -31,7 +32,7 @@ io.on("connection", (socket) => {
 
   socket.on('update_rooms', (newRooms, room, ref, typeRef) => {
     server.update_rooms(newRooms, ROOMS_PATH);
-    server.update_room(room, ROOM_PATH, ref, typeRef);
+    server.update_room(room, ROOM_PATH, ref, typeRef, AUTH_PATH);
     socket.broadcast.emit('new_room', newRooms);
   })
 
@@ -45,7 +46,7 @@ io.on("connection", (socket) => {
   })
 
   socket.on('user_auth', (pass, uuid) => {
-    server.user_auth(ROOM_PATH, pass, uuid, response);
+    server.user_auth(AUTH_PATH, pass, uuid, response);
     function response (data) {
       socket.emit('user_auth', data);
     }

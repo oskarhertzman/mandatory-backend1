@@ -64,10 +64,12 @@ export default function Table({rooms, socket, props}) {
             editable={{
               onRowAdd: (newData) =>
               new Promise((resolve) => {
+                let timeout;
                 setTimeout(() => {
                   resolve();
                   setColumns((prevState) => {
                     if(newData.type === "Public") {
+                      timeout = 600;
                       socketRef.current = "create";
                       typeRef.current = "public";
                       newData.uuid = uuidv4();
@@ -78,6 +80,7 @@ export default function Table({rooms, socket, props}) {
                       return { ...prevState, data };
                     }
                     else if (newData.type === "Private") {
+                      timeout = 0;
                       socketRef.current = "create";
                       typeRef.current = 'private';
                       newData.uuid = uuidv4();
@@ -92,7 +95,7 @@ export default function Table({rooms, socket, props}) {
                       return { ...prevState}
                     }
                   });
-                }, 600);
+                }, timeout);
               }),
               onRowUpdate: (newData, oldData) =>
               new Promise((resolve) => {
@@ -116,6 +119,9 @@ export default function Table({rooms, socket, props}) {
                   resolve();
                   setColumns((prevState) => {
                     socketRef.current = "delete";
+                    if (oldData.type === 'Private') {
+                      typeRef.current = 'privateDel';
+                    }
                     const data = [...prevState.data];
                     data.splice(data.indexOf(oldData), 1);
                     setTabledata(data);

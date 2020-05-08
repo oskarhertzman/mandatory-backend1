@@ -26,6 +26,7 @@ export default function Room(props) {
   const [themTyping, setThemTyping] = useState(false);
   const [timeMsg, setTimeMsg] = useState();
   const [error, setError] = useState(false);
+  const inputRef = useRef();
   const messagesEndRef = useRef(null)
   const serverRef = useRef(false);
   const debounceLoadData = useCallback(debounce(() => {
@@ -117,6 +118,7 @@ export default function Room(props) {
   function sendMessage(e) {
     e.preventDefault();
     setMeTyping(false);
+    inputRef.current.value = '';
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     const merged = {...name, ...message}
     socket.emit('new_message', merged, uuid)
@@ -125,6 +127,7 @@ export default function Room(props) {
 
   function onMessageChange (e) {
     let target = e.target.value
+    console.log(inputRef.current.value);
     updateMessage(prevState => ({...prevState, message: target}));
     setMeTyping(true)
     debounceLoadData();
@@ -188,6 +191,7 @@ export default function Room(props) {
                     <div className="Room__container__main__center__user">
                       <form onSubmit={sendMessage}>
                         <TextField
+                          inputRef={inputRef}
                           autoFocus={true}
                           autoComplete="off"
                           className={inputThemes.message}
@@ -198,6 +202,7 @@ export default function Room(props) {
                             if (ev.key === 'Enter') {
                               ev.preventDefault();
                               sendMessage(ev);
+
                             }
                           }}
                         />

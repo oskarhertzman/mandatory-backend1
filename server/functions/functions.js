@@ -27,9 +27,8 @@ module.exports = {
     })
   },
 
-  update_room: function UpdateRoom (data, path, ref, typeRef) {
+  update_room: function UpdateRoom (data, path, ref, typeRef, authPath) {
     if(ref === 'create') {
-
       if(typeRef === 'public'){
         fsp.writeFile(path + data.uuid + ".json", JSON.stringify(data)).catch(error => {
           console.log(error);
@@ -39,8 +38,14 @@ module.exports = {
         const hash = crypto.createHash('sha256');
         hash.update(data.pass);
         let hashedPw = hash.digest('hex');
-        data.pass = hashedPw;
+        let newAuth = {auth: hashedPw, uuid: data.uuid};
+        delete data['pass'];
+        console.log(data);
+        console.log(newAuth);
         fsp.writeFile(path + data.uuid + ".json", JSON.stringify(data)).catch(error => {
+          console.log(error);
+        })
+        fsp.writeFile(authPath + data.uuid + ".json", JSON.stringify(newAuth)).catch(error => {
           console.log(error);
         })
       }
@@ -54,9 +59,16 @@ module.exports = {
           console.log(error);
         })
       })
-    }  
+    }
     if(ref === 'delete') {
-      fsp.unlink(path + data.uuid + ".json").catch(error => {
+      fsp.unlink(path + data.uuid + ".json").then(() => {
+        if (typeRef === 'privateDel') {
+          fsp.unlink(authPath + data.uuid + ".json").catch(error => {
+            console.log(error);
+          })
+        }
+      })
+      .catch(error => {
         console.log(error);
       })
     }
@@ -88,14 +100,15 @@ module.exports = {
     })
   },
 
-  user_auth: function UserAuth (path, pass, uuid, response) {
+  user_auth: function UserAuth (authPath, pass, uuid, response) {
     let userPass = pass;
     const hash = crypto.createHash('sha256');
     hash.update(userPass.pass);
     let hashedPw = hash.digest('hex');
-    fsp.readFile(path + uuid + ".json").then(data => {
-      let roomPass = JSON.parse(data).pass;
-      if (hashedPw === roomPass) {
+
+    fsp.readFile(authPath + uuid + ".json").then(data => {
+      let auth = JSON.parse(data).auth;
+      if (hashedPw === auth) {
         response({login: true})
       }
       else {
