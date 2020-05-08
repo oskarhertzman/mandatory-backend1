@@ -113,13 +113,16 @@ export default function Room(props) {
     setMsgRefs(msgRefs => (
       Array(room.messages.length).fill().map((_, i) => msgRefs[i] || createRef())
     ));
-  },[room])
+    if (name.name) {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+  }
+},[room, name.name])
 
   function sendMessage(e) {
     e.preventDefault();
     setMeTyping(false);
-    inputRef.current.value = '';
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    inputRef.current.value = '';
     const merged = {...name, ...message}
     socket.emit('new_message', merged, uuid)
     updateRoom(prevState => ({...prevState, messages: [...prevState.messages, merged]}));
