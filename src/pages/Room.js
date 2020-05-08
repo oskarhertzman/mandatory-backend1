@@ -113,10 +113,10 @@ export default function Room(props) {
     setMsgRefs(msgRefs => (
       Array(room.messages.length).fill().map((_, i) => msgRefs[i] || createRef())
     ));
-    if (name.name) {
+    if (name.name || themTyping) {
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   }
-},[room, name.name])
+},[room, name.name, themTyping])
 
   function sendMessage(e) {
     e.preventDefault();
