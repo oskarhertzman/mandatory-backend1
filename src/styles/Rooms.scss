@@ -25,11 +25,8 @@
       &__left {
         width: 0%;
 
-
         .title {
           color: $UserInfo;
-          text-align: center;
-        }
       }
 
       &__center {
@@ -152,7 +149,6 @@
       &__right {
         position: relative;
         width: 20%;
-
 
         &__user {
           display: flex;
