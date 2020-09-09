@@ -1,0 +1,22 @@
+@import "./Variables";
+
+
+.Main {
+
+  &__header {
+    color: white;
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    margin-top: 50px;
+    h1 {
+      padding-right: 10px;
+    }
+    img {
+      width: 5%;
+    }
+  }
+  &__container {
+    @include centerer;
+  }
+}

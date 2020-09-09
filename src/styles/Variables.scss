@@ -1,0 +1,30 @@
+// Variables
+$MainTheme: #586d8e;
+$ChatHeader: white;
+$ChatBG: #dfe6ed;
+$UserInfo: #586d8e;
+$TextOnWhite: #586d8e;
+$Name: #4f5b79;
+$Online: #44c86d;
+
+// Mixins
+@mixin gradient {
+  background: #606c88;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #3f4c6b, #606c88) no-repeat center center fixed;
+  background: linear-gradient(to right, #3f4c6b, #606c88) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+@mixin centerer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+@mixin shadow {
+  -webkit-box-shadow: 0px 0px 15px 0px rgba(173,173,173,1);
+  -moz-box-shadow: 0px 0px 15px 0px rgba(173,173,173,1);
+  box-shadow: 0px 0px 15px 0px rgba(173,173,173,1);
+}

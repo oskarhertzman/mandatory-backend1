@@ -1,0 +1,207 @@
+@import "./Variables";
+
+.Room {
+  @include centerer;
+  &__container {
+    width: 100%;
+    height: 100%;
+    &__header {
+      z-index: 1;
+      width: inherit;
+      background-color: $MainTheme;
+      height: 60px;
+      h1 {
+        vertical-align: middle;
+        padding-left: 50px;
+        color: white;
+      }
+    }
+
+    &__main {
+      display: flex;
+      width: inherit;
+      height: calc(100% - 60px);
+
+      &__left {
+        width: 0%;
+
+
+        .title {
+          color: $UserInfo;
+          text-align: center;
+        }
+      }
+
+      &__center {
+        width: 80%;
+        position: relative;
+
+        &__header {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: $ChatHeader;
+          color: $Name;
+          height: 18%;
+
+          .title {
+            font-weight: bold;
+          }
+        }
+        &__chat {
+          background-color: $ChatBG;
+          display: flex;
+          flex-direction: column;
+          height: 74%;
+          overflow: auto;
+
+
+          .bubble {
+            min-width: 200px;
+            max-width: 550px;
+            margin: 22px;
+            background-color: white;
+            -webkit-box-shadow: 0px 0px 7px 0px rgba(184,184,184,1);
+            -moz-box-shadow: 0px 0px 7px 0px rgba(184,184,184,1);
+            box-shadow: 0px 0px 7px 0px rgba(184,184,184,1);
+            display: block;
+            padding: 5px 18px;
+            position: relative;
+            vertical-align: top;
+            color: $TextOnWhite;
+            word-wrap: break-word;
+          }
+
+          .bubble::before {
+            background-color: white;
+            content: "\00a0";
+            display: block;
+            height: 16px;
+            position: absolute;
+            top: 11px;
+            transform:         rotate( 29deg ) skew( -35deg );
+            -moz-transform:    rotate( 29deg ) skew( -35deg );
+            -ms-transform:     rotate( 29deg ) skew( -35deg );
+            -o-transform:      rotate( 29deg ) skew( -35deg );
+            -webkit-transform: rotate( 29deg ) skew( -35deg );
+            width:  20px;
+          }
+
+          .you {
+            align-self: flex-start;
+            margin-left: 100px;
+          }
+
+          .you::before {
+            box-shadow: -2px 2px 2px 0 rgba(184,184,184,0.4);
+            left: -9px;
+          }
+
+          .me {
+            align-self: flex-end;
+            margin-right:100px;
+          }
+
+          .me::before {
+            box-shadow: 2px -2px 2px 0 rgba(184,184,184,0.4);
+            right: -9px;
+          }
+
+          &__message {
+            display: block;
+
+            &__message {
+
+
+            }
+            &__name {
+              font-weight: bold;
+              text-transform: capitalize;
+              color: $Name;
+            }
+
+            .delMessage {
+              position: absolute;
+              right: 0;
+              bottom: 0;
+
+              &:hover {
+                cursor: pointer;
+              }
+            }
+
+          }
+          .typingLoader {
+            margin-left: 100px;
+          }
+        }
+
+        &__user {
+          width: 100%;
+          height: 8%;
+          form {
+            width: inherit;
+            padding-left: 20px;
+            width: 97%;
+            input {
+
+            }
+          }
+        }
+      }
+      &__right {
+        position: relative;
+        width: 20%;
+
+
+        &__user {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: $UserInfo;
+          position: absolute;
+          top: 0;
+          width: 100%;
+          height:  18%;
+          text-align: center;
+          text-transform: capitalize;
+          color: white;
+        }
+        &__users {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 82%;
+
+            h3 {
+              margin: 30px 0px 40px 30px;
+            }
+          &__online {
+            display: flex;
+            position: relative;
+            margin: 0px 0px 30px 40px;
+            .circle {
+              width: 10px;
+              height: 10px;
+              border-radius: 10px;
+              background-color: $Online;
+              position: absolute;
+              right: 0;
+              margin-right: 50px;
+            }
+            p {
+              line-height: 0.5;
+              margin: 0;
+              padding: 0;
+              padding-left: 30px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
