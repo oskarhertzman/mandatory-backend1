@@ -1,5 +1,1 @@
-<<<<<<< HEAD
 {"name":"Room 1","topic":"Sports","type":"Public","messages":[{"name":"Oskar","message":"Football sucks!"},{"name":"Tom","message":"Yeah, handball is good though"},{"name":"Oskar","message":"No, handball sucks too!"},{"name":"Tom","message":"..."}],"uuid":"3489dbb4-c3c3-451a-a84f-795b8f9e7165","users_online":[]}
-=======
-{"name":"Room 1","topic":"Sports","type":"Public","messages":[{"name":"Oskar","message":"Football sucks!"},{"name":"Tom","message":"Yeah, handball is good though"},{"name":"Oskar","message":"No, handball sucks too!"},{"name":"Tom","message":"..."}],"uuid":"3489dbb4-c3c3-451a-a84f-795b8f9e7165","users_online":[]}
->>>>>>> 71472bccc48de43fa0b34a49314c1dff066d5886

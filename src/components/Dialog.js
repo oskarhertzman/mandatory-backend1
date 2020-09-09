@@ -9,7 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-const ENDPOINT = "http://127.0.0.1:8090";
+const ENDPOINT = "http://127.0.0.1:5000";
 const socket = io(ENDPOINT);
 
 

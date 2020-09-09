@@ -27,8 +27,8 @@
 
         .title {
           color: $UserInfo;
+        }
       }
-
       &__center {
         width: 80%;
         position: relative;
@@ -169,9 +169,9 @@
           width: 100%;
           height: 82%;
 
-            h3 {
-              margin: 30px 0px 40px 30px;
-            }
+          h3 {
+            margin: 30px 0px 40px 30px;
+          }
           &__online {
             display: flex;
             position: relative;
