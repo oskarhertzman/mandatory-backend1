@@ -13,7 +13,7 @@ import nav from '../utilities/nav';
 import time from '../utilities/time';
 import '../styles/Rooms.scss';
 
-const ENDPOINT = "http://127.0.0.1:5000";
+const ENDPOINT = `${window.location.hostname}:5000`;
 const socket = io(ENDPOINT);
 nav(window.location.pathname)
 
