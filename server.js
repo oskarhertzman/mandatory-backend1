@@ -6,8 +6,8 @@ const socketIo = require("socket.io");
 const path = require("path");
 let reqPath = path.join(__dirname, '../')
 
-const server = require('./functions/functions.js');
-const index = require("./routes/index");
+const server = require('./server/functions/functions.js');
+const index = require("./server/routes/index");
 
 const app = express();
 const the_server = http.createServer(app);
@@ -20,11 +20,11 @@ if (!dev) {
   app.disable('x-powered-by');
   app.use(compression());
   app.use(morgan('common'));
-  app.use(express.static(path.resolve(__dirname, '../build')))
+  app.use(express.static(path.resolve(__dirname, 'build')))
 
 
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../build', 'index.html'))
+    res.sendFile(path.resolve(__dirname, 'build', 'index.html'))
   })
 }
 
@@ -32,9 +32,9 @@ if (dev) {
   app.use(morgan('dev'));
 }
 
-const ROOMS_PATH = './db/rooms/rooms.json';
-const ROOM_PATH = './db/room/';
-const AUTH_PATH = './db/auth/';
+const ROOMS_PATH = './server/db/rooms/rooms.json';
+const ROOM_PATH = './server/db/room/';
+const AUTH_PATH = './server/db/auth/';
 
 let interval;
 app.use(index);
