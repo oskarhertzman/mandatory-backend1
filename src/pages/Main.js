@@ -7,7 +7,7 @@ import Table from '../components/Table.js';
 import svg from '../assets/socket-io.png';
 import '../styles/Main.scss';
 
-const ENDPOINT = `${window.location.hostname}:5000`;
+const ENDPOINT = "http://127.0.0.1:5000";
 const socket = io(ENDPOINT);
 
 export default function Main(props) {
